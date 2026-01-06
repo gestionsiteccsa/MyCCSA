@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouvelle connexion détectée</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background-color: #f8f9fa; padding: 20px; border-radius: 5px;">
+        <h1 style="color: #2563eb;">Nouvelle connexion détectée</h1>
+        
+        <p>Bonjour {{ user.get_full_name }},</p>
+        
+        <p>Une nouvelle connexion à votre compte {{ site_name }} a été détectée.</p>
+        
+        <p><strong>Adresse IP :</strong> {{ ip_address }}</p>
+        
+        <p>Si vous êtes à l'origine de cette connexion, vous pouvez ignorer cet email.</p>
+        
+        <p>Si vous ne reconnaissez pas cette connexion, veuillez changer votre mot de passe immédiatement et nous contacter.</p>
+        
+        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+        
+        <p style="font-size: 12px; color: #666;">
+            Cet email a été envoyé automatiquement, merci de ne pas y répondre.
+        </p>
+    </div>
+</body>
+</html>
+
+

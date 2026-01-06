@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Valider l'événement{% endblock %}
+{% block description %}Valider ou refuser l'événement{{ event.titre }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <header class="mb-8">
+        <div class="bg-gradient-to-r from-orange-50 via-white to-orange-50 rounded-xl shadow-lg p-6 md:p-8 border-l-4 border-orange-500">
+            <div class="flex items-center gap-4">
+                <a
+                    href="{% url 'events:detail' event.pk %}"
+                    class="inline-flex items-center gap-2 text-orange-600 hover:text-orange-800 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 rounded-lg px-3 py-2 transition-colors duration-200 hover:bg-orange-50"
+                    aria-label="Retour aux détails"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Retour
+                </a>
+                <div class="flex items-center gap-4 flex-1">
+                    <div class="p-3 bg-orange-500/10 rounded-xl">
+                        <svg class="w-8 h-8 md:w-10 md:h-10 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-gray-900">
+                            Valider l'événement
+                        </h1>
+                        <p class="text-gray-600 mt-1">{{ event.titre }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Détails de l'événement -->
+    <section class="bg-white shadow-md rounded-xl p-6 md:p-8 border border-gray-100 mb-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Détails de l'événement</h2>
+        <div class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <span class="text-sm font-medium text-gray-500">Date de début</span>
+                    <p class="text-gray-900">{{ event.date_debut|date:"d/m/Y H:i" }}</p>
+                </div>
+                {% if event.date_fin %}
+                <div>
+                    <span class="text-sm font-medium text-gray-500">Date de fin</span>
+                    <p class="text-gray-900">{{ event.date_fin|date:"d/m/Y H:i" }}</p>
+                </div>
+                {% endif %}
+                {% if event.lieu %}
+                <div>
+                    <span class="text-sm font-medium text-gray-500">Lieu</span>
+                    <p class="text-gray-900">{{ event.lieu }}</p>
+                </div>
+                {% endif %}
+                <div>
+                    <span class="text-sm font-medium text-gray-500">Créateur</span>
+                    <p class="text-gray-900">{{ event.createur.get_full_name|default:event.createur.email }}</p>
+                </div>
+            </div>
+            {% if event.description %}
+            <div>
+                <span class="text-sm font-medium text-gray-500">Description</span>
+                <p class="text-gray-900">{{ event.description }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Formulaires de validation -->
+    {% if can_validate_dga %}
+    <section class="bg-white shadow-md rounded-xl p-6 md:p-8 border border-gray-100 mb-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+            <span class="inline-flex items-center gap-2">
+                <span class="px-2 py-1 bg-orange-100 text-orange-700 rounded text-sm">DGA</span>
+                Validation DGA requise
+            </span>
+        </h2>
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <input type="hidden" name="validation_type" value="dga">
+            <div>
+                <label for="commentaire_dga" class="block text-sm font-medium text-gray-700 mb-2">
+                    Commentaire (optionnel)
+                </label>
+                <textarea
+                    id="commentaire_dga"
+                    name="commentaire"
+                    rows="3"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="Ajoutez un commentaire pour expliquer votre décision..."
+                ></textarea>
+            </div>
+            <div class="flex gap-4">
+                <button
+                    type="submit"
+                    name="action"
+                    value="valider"
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Valider
+                </button>
+                <button
+                    type="submit"
+                    name="action"
+                    value="refuser"
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    Refuser
+                </button>
+            </div>
+        </form>
+    </section>
+    {% endif %}
+
+    {% if can_validate_dgs %}
+    <section class="bg-white shadow-md rounded-xl p-6 md:p-8 border border-gray-100 mb-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+            <span class="inline-flex items-center gap-2">
+                <span class="px-2 py-1 bg-orange-100 text-orange-700 rounded text-sm">DGS</span>
+                Validation DGS requise
+            </span>
+        </h2>
+        <form method="post" class="space-y-4">
+            {% csrf_token %}
+            <input type="hidden" name="validation_type" value="dgs">
+            <div>
+                <label for="commentaire_dgs" class="block text-sm font-medium text-gray-700 mb-2">
+                    Commentaire (optionnel)
+                </label>
+                <textarea
+                    id="commentaire_dgs"
+                    name="commentaire"
+                    rows="3"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                    placeholder="Ajoutez un commentaire pour expliquer votre décision..."
+                ></textarea>
+            </div>
+            <div class="flex gap-4">
+                <button
+                    type="submit"
+                    name="action"
+                    value="valider"
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Valider
+                </button>
+                <button
+                    type="submit"
+                    name="action"
+                    value="refuser"
+                    class="inline-flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    Refuser
+                </button>
+            </div>
+        </form>
+    </section>
+    {% endif %}
+
+    {% if not can_validate_dga and not can_validate_dgs %}
+    <section class="bg-white shadow-md rounded-xl p-6 md:p-8 border border-gray-100">
+        <div class="text-center py-8">
+            <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+            <p class="text-gray-600 mb-4">Aucune validation n'est requise pour cet événement ou vous avez déjà effectué votre validation.</p>
+            <a
+                href="{% url 'events:detail' event.pk %}"
+                class="inline-flex items-center gap-2 px-6 py-3 bg-custom-blue text-white rounded-lg hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-all duration-200 font-semibold"
+            >
+                Retour aux détails
+            </a>
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

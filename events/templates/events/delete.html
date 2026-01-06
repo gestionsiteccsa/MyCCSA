@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Supprimer l'événement{% endblock %}
+{% block description %}Supprimer l'événement {{ event.titre }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <header class="mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-100">
+            <div class="flex items-center gap-4">
+                <a
+                    href="{% url 'events:detail' event.pk %}"
+                    class="inline-flex items-center gap-2 text-custom-blue hover:text-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 rounded-lg px-2 py-1 transition-colors duration-200"
+                    aria-label="Retour aux détails"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Retour
+                </a>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900">
+                        Supprimer l'événement
+                    </h1>
+                    <p class="text-gray-600 mt-1">Confirmez la suppression</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Confirmation -->
+    <section class="bg-white shadow-md rounded-xl p-6 md:p-8 border border-gray-100">
+        <div role="alert" class="mb-6 p-4 bg-red-100 text-red-800 rounded-lg border border-red-200">
+            <div class="flex items-start gap-3">
+                <svg class="w-6 h-6 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                <div>
+                    <h3 class="font-semibold mb-1">Attention !</h3>
+                    <p>Cette action est irréversible. L'événement sera définitivement supprimé.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-6 p-6 bg-gray-50 rounded-lg border border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Informations de l'événement</h2>
+            <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 mb-1">Titre</dt>
+                    <dd class="text-base text-gray-900 font-medium">{{ event.titre }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 mb-1">Date de début</dt>
+                    <dd class="text-base text-gray-900">{{ event.date_debut|date:"d/m/Y H:i" }}</dd>
+                </div>
+                {% if event.date_fin %}
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 mb-1">Date de fin</dt>
+                    <dd class="text-base text-gray-900">{{ event.date_fin|date:"d/m/Y H:i" }}</dd>
+                </div>
+                {% endif %}
+                {% if event.lieu %}
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 mb-1">Lieu</dt>
+                    <dd class="text-base text-gray-900">{{ event.lieu }}</dd>
+                </div>
+                {% endif %}
+                {% if event.secteurs.all %}
+                <div>
+                    <dt class="text-sm font-medium text-gray-500 mb-1">Secteurs</dt>
+                    <dd class="text-base text-gray-900">
+                        {% for secteur in event.secteurs.all %}
+                        <span class="inline-block mr-2">{{ secteur.nom }}</span>
+                        {% endfor %}
+                    </dd>
+                </div>
+                {% endif %}
+            </dl>
+        </div>
+
+        <div id="event-delete-app">
+            <form method="post" class="mt-8" @submit.prevent="handleSubmit">
+                {% csrf_token %}
+                <div class="flex gap-4 justify-end">
+                    <a
+                        href="{% url 'events:detail' event.pk %}"
+                        class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 font-semibold"
+                    >
+                        Annuler
+                    </a>
+                    <button
+                        type="submit"
+                        :disabled="!confirmed || isSubmitting"
+                        :class="!confirmed || isSubmitting ? 'opacity-50 cursor-not-allowed' : ''"
+                        class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <span v-if="isSubmitting">Suppression en cours...</span>
+                        <span v-else>Confirmer la suppression</span>
+                    </button>
+                </div>
+            </form>
+            
+            <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <div class="flex items-start gap-3">
+                    <input
+                        type="checkbox"
+                        id="confirm-delete"
+                        v-model="confirmed"
+                        class="mt-1 w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                    />
+                    <label for="confirm-delete" class="text-sm text-gray-700 cursor-pointer">
+                        Je confirme vouloir supprimer définitivement cet événement. Cette action est irréversible.
+                    </label>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Vérifier que Vue.js est disponible
+    if (typeof Vue === 'undefined') {
+        // Fallback : afficher le formulaire Django normal
+        const app = document.getElementById('event-delete-app');
+        if (app) {
+            const form = app.querySelector('form');
+            if (form) {
+                form.removeAttribute('@submit.prevent');
+            }
+            const checkbox = app.querySelector('#confirm-delete');
+            if (checkbox) {
+                checkbox.remove();
+            }
+        }
+        return;
+    }
+
+    const { createApp } = Vue;
+
+    createApp({
+        data() {
+            return {
+                confirmed: false,
+                isSubmitting: false,
+            };
+        },
+        methods: {
+            handleSubmit(event) {
+                if (!this.confirmed) {
+                    event.preventDefault();
+                    return false;
+                }
+                
+                this.isSubmitting = true;
+                // Laisser le formulaire se soumettre normalement
+                event.target.submit();
+            },
+        },
+    }).mount('#event-delete-app');
+});
+</script>
+{% endblock %}
+{% endblock %}
+
+
+
+

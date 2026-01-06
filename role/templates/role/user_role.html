@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Gérer le rôle de {{ user.get_full_name|default:user.email }}{% endblock %}
+{% block description %}Attribuer un rôle à {{ user.get_full_name|default:user.email }}{% endblock %}
+
+{% block content %}
+<article class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <header class="mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-100">
+            <div class="flex items-center gap-4">
+                <a
+                    href="{% url 'role:user_list' %}"
+                    class="inline-flex items-center gap-2 text-custom-blue hover:text-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 rounded-lg px-2 py-1 transition-colors duration-200"
+                    aria-label="Retour à la liste des utilisateurs"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Retour
+                </a>
+                <div class="flex-grow">
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900">
+                        Gérer le rôle
+                    </h1>
+                    <p class="text-gray-600 mt-1">{{ user.get_full_name|default:user.email }}</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Formulaire avec Vue.js -->
+    <section class="bg-white shadow-md rounded-xl p-6 md:p-8 border border-gray-100">
+        <div id="app">
+            <form method="post" @submit.prevent="submitForm">
+                {% csrf_token %}
+                
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">
+                        Sélectionnez le rôle à attribuer
+                    </h2>
+                    <p class="text-sm text-gray-600 mb-6">
+                        Choisissez un rôle pour cet utilisateur. Un utilisateur ne peut avoir qu'un seul rôle à la fois.
+                    </p>
+
+                    <!-- Version Django (fallback si Vue.js n'est pas chargé) -->
+                    <div id="roles-fallback" class="space-y-3">
+                        {% for role in all_roles %}
+                        <div class="flex items-center gap-3 p-4 border-2 rounded-xl border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200">
+                            <input
+                                type="radio"
+                                id="role-{{ role.id }}"
+                                name="role"
+                                value="{{ role.id }}"
+                                {% if user.role and user.role.id == role.id %}checked{% endif %}
+                                class="w-4 h-4 text-custom-blue border-gray-300 focus:ring-custom-blue focus:ring-2 cursor-pointer flex-shrink-0"
+                                aria-label="Sélectionner le rôle {{ role.nom }}"
+                            />
+                            <label
+                                for="role-{{ role.id }}"
+                                class="flex items-center gap-3 cursor-pointer flex-grow"
+                            >
+                                <span class="text-base font-semibold text-gray-900">{{ role.nom }}</span>
+                                <span class="text-sm text-gray-600">(Niveau {{ role.niveau }})</span>
+                            </label>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-8 text-gray-600">
+                            <p>Aucun rôle disponible pour le moment.</p>
+                        </div>
+                        {% endfor %}
+                        <div class="flex items-center gap-3 p-4 border-2 rounded-xl border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200">
+                            <input
+                                type="radio"
+                                id="role-none"
+                                name="role"
+                                value=""
+                                {% if not user.role %}checked{% endif %}
+                                class="w-4 h-4 text-custom-blue border-gray-300 focus:ring-custom-blue focus:ring-2 cursor-pointer flex-shrink-0"
+                                aria-label="Aucun rôle"
+                            />
+                            <label
+                                for="role-none"
+                                class="flex items-center gap-3 cursor-pointer flex-grow"
+                            >
+                                <span class="text-base font-semibold text-gray-900">Aucun rôle</span>
+                                <span class="text-sm text-gray-600">(Retirer le rôle actuel)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Version Vue.js (masquée par défaut, affichée quand Vue.js charge) -->
+                    <div id="roles-vue" v-show="roles.length > 0" class="space-y-3" style="display: none;">
+                        <div
+                            v-for="role in roles"
+                            :key="role.id"
+                            class="flex items-center gap-3 p-4 border-2 rounded-xl transition-all duration-200 cursor-pointer"
+                            :class="selectedRole === role.id ? 'border-custom-blue bg-blue-50' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'"
+                            @click="selectRole(role.id)"
+                            role="radio"
+                            :aria-checked="selectedRole === role.id"
+                            tabindex="0"
+                            @keydown.enter.prevent="selectRole(role.id)"
+                            @keydown.space.prevent="selectRole(role.id)"
+                        >
+                            <input
+                                type="radio"
+                                :id="'role-' + role.id"
+                                name="role"
+                                :value="role.id"
+                                v-model="selectedRole"
+                                class="w-4 h-4 text-custom-blue border-gray-300 focus:ring-custom-blue focus:ring-2 cursor-pointer flex-shrink-0"
+                                :aria-label="'Sélectionner le rôle ' + role.nom"
+                                @click.stop
+                            />
+                            <label
+                                :for="'role-' + role.id"
+                                class="flex items-center gap-3 cursor-pointer flex-grow"
+                            >
+                                <span class="text-base font-semibold text-gray-900">{{ role.nom }}</span>
+                                <span class="text-sm text-gray-600">(Niveau {{ role.niveau }})</span>
+                            </label>
+                        </div>
+                        <div
+                            class="flex items-center gap-3 p-4 border-2 rounded-xl transition-all duration-200 cursor-pointer"
+                            :class="selectedRole === null || selectedRole === '' ? 'border-custom-blue bg-blue-50' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'"
+                            @click="selectRole(null)"
+                            role="radio"
+                            :aria-checked="selectedRole === null || selectedRole === ''"
+                            tabindex="0"
+                            @keydown.enter.prevent="selectRole(null)"
+                            @keydown.space.prevent="selectRole(null)"
+                        >
+                            <input
+                                type="radio"
+                                id="role-none-vue"
+                                name="role"
+                                value=""
+                                v-model="selectedRole"
+                                class="w-4 h-4 text-custom-blue border-gray-300 focus:ring-custom-blue focus:ring-2 cursor-pointer flex-shrink-0"
+                                aria-label="Aucun rôle"
+                                @click.stop
+                            />
+                            <label
+                                for="role-none-vue"
+                                class="flex items-center gap-3 cursor-pointer flex-grow"
+                            >
+                                <span class="text-base font-semibold text-gray-900">Aucun rôle</span>
+                                <span class="text-sm text-gray-600">(Retirer le rôle actuel)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="mt-8 flex gap-4 justify-end pt-6 border-t border-gray-200">
+                    <a
+                        href="{% url 'role:user_list' %}"
+                        class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 font-semibold"
+                    >
+                        Annuler
+                    </a>
+                    <button
+                        type="submit"
+                        class="px-6 py-3 bg-custom-blue text-white rounded-lg hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                        :disabled="isSubmitting"
+                    >
+                        <span v-if="!isSubmitting">Enregistrer les modifications</span>
+                        <span v-else>Enregistrement...</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+</article>
+
+{% block extra_scripts %}
+<script>
+    const { createApp } = Vue;
+
+    createApp({
+        data() {
+            return {
+                roles: [
+                    {% for role in all_roles %}
+                    {
+                        id: {{ role.id }},
+                        nom: '{{ role.nom|escapejs }}',
+                        niveau: {{ role.niveau }},
+                    },
+                    {% endfor %}
+                ],
+                selectedRole: {% if user.role %}{{ user.role.id }}{% else %}null{% endif %},
+                isSubmitting: false,
+            };
+        },
+        methods: {
+            selectRole(roleId) {
+                this.selectedRole = roleId;
+            },
+            submitForm(event) {
+                this.isSubmitting = true;
+                
+                // Le formulaire sera soumis normalement
+                event.target.submit();
+            },
+        },
+        mounted() {
+            // Masquer le fallback Django et afficher la version Vue.js
+            const fallback = document.getElementById('roles-fallback');
+            const vueVersion = document.getElementById('roles-vue');
+            if (fallback && vueVersion) {
+                fallback.style.display = 'none';
+                vueVersion.style.display = 'block';
+            }
+        },
+    }).mount('#app');
+</script>
+{% endblock %}
+{% endblock %}
+
+
+
+
+
+
+
+
+

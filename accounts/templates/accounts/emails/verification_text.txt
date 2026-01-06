@@ -1,0 +1,15 @@
+Vérification de votre adresse email
+
+Bonjour {{ user.get_full_name }},
+
+Merci de vous être inscrit sur {{ site_name }}. Pour activer votre compte, veuillez cliquer sur le lien ci-dessous :
+
+{{ verification_url }}
+
+Ce lien expirera dans 24 heures.
+
+Si vous n'avez pas créé de compte sur {{ site_name }}, vous pouvez ignorer cet email.
+
+Cet email a été envoyé automatiquement, merci de ne pas y répondre.
+
+

@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Connexion{% endblock %}
+{% block description %}Connectez-vous à votre compte MyCCSA{% endblock %}
+
+{% block content %}
+<article class="max-w-md mx-auto" id="login-app">
+    <header class="mb-8 md:mb-12">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+            <svg class="w-8 h-8 text-custom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+            </svg>
+            Connexion
+        </h1>
+        <p class="text-gray-600 text-lg">
+            Connectez-vous à votre compte pour continuer.
+        </p>
+    </header>
+
+    <section class="bg-white shadow-lg rounded-xl p-6 md:p-8 border border-gray-100">
+        <form method="post" class="space-y-6" novalidate>
+        {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div role="alert" class="p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg flex items-start gap-3 mb-6">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                    <p class="font-medium mb-1">Erreurs dans le formulaire</p>
+                    {{ form.non_field_errors }}
+                </div>
+            </div>
+            {% endif %}
+
+            <div>
+                <label for="{{ form.email.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-custom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    {{ form.email.label }}
+                    <span class="text-red-600" aria-label="Champ obligatoire">*</span>
+                </label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                <div id="email-error" role="alert" class="mt-2 flex items-start gap-2 text-sm text-red-600">
+                    <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>{{ form.email.errors }}</div>
+                </div>
+                {% endif %}
+                {% if form.email.help_text %}
+                <p id="email-help" class="mt-2 text-sm text-gray-500">
+                    {{ form.email.help_text }}
+                </p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.password.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-custom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                    </svg>
+                    {{ form.password.label }}
+                    <span class="text-red-600" aria-label="Champ obligatoire">*</span>
+                </label>
+                <div class="relative">
+                    {{ form.password }}
+                    <button
+                        type="button"
+                        @click="showPassword = !showPassword"
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-blue rounded p-1"
+                        :aria-label="showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+                    >
+                        <svg v-if="showPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                        </svg>
+                        <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                    </button>
+                </div>
+                {% if form.password.errors %}
+                <div id="password-error" role="alert" class="mt-2 flex items-start gap-2 text-sm text-red-600">
+                    <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>{{ form.password.errors }}</div>
+                </div>
+                {% endif %}
+                {% if form.password.help_text %}
+                <p id="password-help" class="mt-2 text-sm text-gray-500">
+                    {{ form.password.help_text }}
+                </p>
+                {% endif %}
+            </div>
+
+            <div class="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                {{ form.remember_me }}
+                <label for="{{ form.remember_me.id_for_label }}" class="text-sm font-medium text-gray-700 cursor-pointer">
+                    {{ form.remember_me.label }}
+                </label>
+                {% if form.remember_me.help_text %}
+                <span id="remember_me-help" class="sr-only">
+                    {{ form.remember_me.help_text }}
+                </span>
+                {% endif %}
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-200">
+                <button
+                    type="submit"
+                    class="flex-1 px-6 py-3 bg-custom-blue text-white rounded-lg hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg transform hover:scale-[1.02] flex items-center justify-center gap-2"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                    </svg>
+                    Se connecter
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <nav aria-label="Navigation inscription et mot de passe" class="mt-6 space-y-3 text-center">
+        <p class="text-gray-600">
+            Pas encore de compte ?
+            <a
+                href="{% url 'accounts:register' %}"
+                class="text-custom-blue hover:text-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 rounded underline font-medium"
+            >
+                Créez-en un
+            </a>
+        </p>
+        <p class="text-gray-600">
+            <a
+                href="{% url 'accounts:password_reset' %}"
+                class="text-custom-blue hover:text-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 rounded underline font-medium"
+            >
+                Mot de passe oublié ?
+            </a>
+        </p>
+    </nav>
+</article>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function initVueApp() {
+    if (typeof Vue === 'undefined') {
+        setTimeout(initVueApp, 50);
+        return;
+    }
+    
+    try {
+        const { createApp } = Vue;
+
+createApp({
+    data() {
+        return {
+            showPassword: false
+        };
+    },
+    mounted() {
+        const passwordInput = document.getElementById('{{ form.password.id_for_label }}');
+        if (passwordInput) {
+            passwordInput.addEventListener('input', () => {
+                if (passwordInput.type === 'password' && this.showPassword) {
+                    passwordInput.type = 'text';
+                } else if (passwordInput.type === 'text' && !this.showPassword) {
+                    passwordInput.type = 'password';
+                }
+            });
+        }
+    },
+    watch: {
+        showPassword(newVal) {
+            const input = document.getElementById('{{ form.password.id_for_label }}');
+            if (input) {
+                input.type = newVal ? 'text' : 'password';
+            }
+        }
+    }
+}).mount('#login-app');
+    } catch (error) {
+        console.error('Error initializing Vue app:', error);
+    }
+}
+
+if (typeof Vue !== 'undefined') {
+    initVueApp();
+} else {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            waitForVue();
+        });
+    } else {
+        waitForVue();
+    }
+}
+
+function waitForVue() {
+    if (typeof Vue !== 'undefined') {
+        initVueApp();
+    } else {
+        setTimeout(waitForVue, 50);
+    }
+}
+</script>
+{% endblock %}
+
+

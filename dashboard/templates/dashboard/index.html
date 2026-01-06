@@ -1,0 +1,457 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard administrateur{% endblock %}
+{% block description %}Tableau de bord pour la gestion de l'application{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <header class="mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-100">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                Dashboard administrateur
+            </h1>
+            <p class="text-gray-600">Gérez toutes les fonctionnalités de l'application</p>
+        </div>
+    </header>
+
+    <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Sidebar Navigation (Desktop) -->
+        <aside class="hidden lg:block lg:w-64 flex-shrink-0">
+            <nav aria-label="Navigation du dashboard" class="bg-white rounded-xl shadow-md border border-gray-100 p-4 sticky top-24">
+                <ul class="space-y-2">
+                    <li>
+                        <a
+                            href="#overview"
+                            onclick="showSection('overview'); return false;"
+                            class="dashboard-nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                            aria-current="page"
+                            data-section="overview"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                            </svg>
+                            <span class="font-medium">Vue d'ensemble</span>
+                        </a>
+                    </li>
+                    <li>
+                        {% url 'secteurs:user_list' as secteurs_user_list_url %}
+                        {% if secteurs_user_list_url %}
+                        <a
+                            href="{{ secteurs_user_list_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                            <span class="font-medium">Secteurs</span>
+                        </a>
+                        {% else %}
+                        <span class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 cursor-not-allowed">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                            <span class="font-medium">Secteurs</span>
+                        </span>
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% url 'role:list' as role_list_url %}
+                        {% if role_list_url %}
+                        <a
+                            href="{{ role_list_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                            aria-label="Gérer les rôles"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                            <span class="font-medium">Rôles</span>
+                        </a>
+                        {% else %}
+                        <span class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 cursor-not-allowed">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                            <span class="font-medium">Rôles</span>
+                        </span>
+                        {% endif %}
+                    </li>
+                    <li>
+                        <a
+                            href="#utilisateurs"
+                            onclick="showSection('utilisateurs'); return false;"
+                            class="dashboard-nav-item flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                            data-section="utilisateurs"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <span class="font-medium">Utilisateurs</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                            href="/admin/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            <span class="font-medium">Admin Django</span>
+                            <svg class="w-4 h-4 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Onglets Navigation (Mobile/Tablet) -->
+        <div class="lg:hidden mb-6">
+            <nav aria-label="Navigation du dashboard" class="bg-white rounded-xl shadow-md border border-gray-100 p-2">
+                <div class="flex overflow-x-auto scrollbar-hide">
+                    <button
+                        onclick="showSection('overview')"
+                        class="dashboard-tab flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        data-section="overview"
+                        aria-current="page"
+                    >
+                        Vue d'ensemble
+                    </button>
+                    {% url 'secteurs:user_list' as secteurs_user_list_url %}
+                    {% if secteurs_user_list_url %}
+                    <a
+                        href="{{ secteurs_user_list_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    >
+                        Secteurs
+                    </a>
+                    {% else %}
+                    <span class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-400 cursor-not-allowed">
+                        Secteurs
+                    </span>
+                    {% endif %}
+                    {% url 'role:list' as role_list_url %}
+                    {% if role_list_url %}
+                    <a
+                        href="{{ role_list_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        aria-label="Gérer les rôles"
+                    >
+                        Rôles
+                    </a>
+                    {% else %}
+                    <span class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-400 cursor-not-allowed">
+                        Rôles
+                    </span>
+                    {% endif %}
+                    <button
+                        onclick="showSection('utilisateurs')"
+                        class="dashboard-tab flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        data-section="utilisateurs"
+                    >
+                        Utilisateurs
+                    </button>
+                    <a
+                        href="/admin/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    >
+                        Admin Django
+                    </a>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Contenu principal -->
+        <main class="flex-1">
+            <!-- Section Vue d'ensemble -->
+            <section id="section-overview" class="dashboard-section">
+                <div class="space-y-6">
+                    <!-- Statistiques -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 mb-1">Utilisateurs totaux</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{ stats.total_users }}</p>
+                                </div>
+                                <div class="w-12 h-12 rounded-lg bg-blue-100 flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-custom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 mb-1">Utilisateurs actifs</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{ stats.active_users }}</p>
+                                </div>
+                                <div class="w-12 h-12 rounded-lg bg-green-100 flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 mb-1">Secteurs</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{ stats.total_secteurs }}</p>
+                                </div>
+                                <div class="w-12 h-12 rounded-lg bg-purple-100 flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 mb-1">Avec secteurs</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{ stats.users_with_secteurs }}</p>
+                                </div>
+                                <div class="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 mb-1">Rôles</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{ stats.total_roles }}</p>
+                                </div>
+                                <div class="w-12 h-12 rounded-lg bg-indigo-100 flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 mb-1">Avec rôles</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{ stats.users_with_roles }}</p>
+                                </div>
+                                <div class="w-12 h-12 rounded-lg bg-teal-100 flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 mb-1">En attente DGA</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{ stats.events_pending_dga }}</p>
+                                </div>
+                                <div class="w-12 h-12 rounded-lg bg-red-100 flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 mb-1">En attente DGS</p>
+                                    <p class="text-2xl font-bold text-gray-900">{{ stats.events_pending_dgs }}</p>
+                                </div>
+                                <div class="w-12 h-12 rounded-lg bg-rose-100 flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Derniers utilisateurs -->
+                    <div class="bg-white rounded-xl shadow-md p-6 md:p-8 border border-gray-100">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                            <svg class="w-6 h-6 text-custom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            Derniers utilisateurs inscrits
+                        </h2>
+                        {% if stats.latest_users %}
+                        <div class="space-y-3">
+                            {% for user in stats.latest_users %}
+                            <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-custom-blue flex items-center justify-center text-white font-bold">
+                                        {% if user.first_name and user.last_name %}
+                                            {{ user.first_name|first }}{{ user.last_name|first }}
+                                        {% elif user.first_name %}
+                                            {{ user.first_name|first }}
+                                        {% else %}
+                                            {{ user.email|first|upper }}
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">{{ user.get_full_name|default:user.email }}</p>
+                                        <p class="text-sm text-gray-600">{{ user.email }}</p>
+                                    </div>
+                                </div>
+                                <span class="text-sm text-gray-500">{{ user.date_joined|date:"d/m/Y" }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p class="text-gray-600">Aucun utilisateur pour le moment.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Utilisateurs -->
+            <section id="section-utilisateurs" class="dashboard-section hidden">
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl shadow-md p-6 md:p-8 border border-gray-100">
+                        <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                            <svg class="w-6 h-6 text-custom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            Gestion des utilisateurs
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <a
+                                href="/admin/accounts/user/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="group bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-custom-blue hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2"
+                            >
+                                <div class="flex flex-col items-center text-center">
+                                    <div class="w-12 h-12 rounded-lg bg-custom-blue flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Liste des utilisateurs</h3>
+                                    <p class="text-sm text-gray-600">Gérer les utilisateurs dans l'admin</p>
+                                </div>
+                            </a>
+                            {% url 'secteurs:user_list' as secteurs_user_list_url %}
+                            {% if secteurs_user_list_url %}
+                            <a
+                                href="{{ secteurs_user_list_url }}"
+                                class="group bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-custom-blue hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2"
+                            >
+                                <div class="flex flex-col items-center text-center">
+                                    <div class="w-12 h-12 rounded-lg bg-custom-blue flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Attribuer des secteurs</h3>
+                                    <p class="text-sm text-gray-600">Gérer les secteurs des utilisateurs</p>
+                                </div>
+                            </a>
+                            {% endif %}
+                            {% url 'role:user_list' as role_user_list_url %}
+                            {% if role_user_list_url %}
+                            <a
+                                href="{{ role_user_list_url }}"
+                                class="group bg-white border-2 border-gray-200 rounded-xl p-6 hover:border-custom-blue hover:shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2"
+                                aria-label="Attribuer des rôles aux utilisateurs"
+                            >
+                                <div class="flex flex-col items-center text-center">
+                                    <div class="w-12 h-12 rounded-lg bg-custom-blue flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-1">Attribuer des rôles</h3>
+                                    <p class="text-sm text-gray-600">Gérer les rôles des utilisateurs</p>
+                                </div>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+{% block extra_scripts %}
+<script>
+    function showSection(sectionName) {
+        // Masquer toutes les sections
+        document.querySelectorAll('.dashboard-section').forEach(section => {
+            section.classList.add('hidden');
+        });
+
+        // Afficher la section sélectionnée
+        const targetSection = document.getElementById('section-' + sectionName);
+        if (targetSection) {
+            targetSection.classList.remove('hidden');
+        }
+
+        // Mettre à jour la navigation active (sidebar)
+        document.querySelectorAll('.dashboard-nav-item').forEach(item => {
+            if (item.getAttribute('data-section') === sectionName) {
+                item.classList.add('bg-custom-blue', 'text-white');
+                item.classList.remove('text-gray-700', 'hover:bg-gray-100', 'hover:text-custom-blue');
+                item.setAttribute('aria-current', 'page');
+            } else {
+                item.classList.remove('bg-custom-blue', 'text-white');
+                item.classList.add('text-gray-700', 'hover:bg-gray-100', 'hover:text-custom-blue');
+                item.removeAttribute('aria-current');
+            }
+        });
+
+        // Mettre à jour les onglets actifs (mobile)
+        document.querySelectorAll('.dashboard-tab').forEach(tab => {
+            if (tab.getAttribute('data-section') === sectionName) {
+                tab.classList.add('bg-custom-blue', 'text-white');
+                tab.classList.remove('text-gray-700', 'hover:bg-gray-100', 'hover:text-custom-blue');
+                tab.setAttribute('aria-current', 'page');
+            } else {
+                tab.classList.remove('bg-custom-blue', 'text-white');
+                tab.classList.add('text-gray-700', 'hover:bg-gray-100', 'hover:text-custom-blue');
+                tab.removeAttribute('aria-current');
+            }
+        });
+    }
+
+    // Initialiser avec la section overview
+    document.addEventListener('DOMContentLoaded', function() {
+        showSection('overview');
+    });
+</script>
+<style>
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+</style>
+{% endblock %}
+{% endblock %}
+

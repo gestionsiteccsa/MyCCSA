@@ -1,0 +1,437 @@
+{% extends "base.html" %}
+
+{% block title %}Liste des événements{% endblock %}
+{% block description %}Consultez tous les événements{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <header class="mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-100">
+            <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                        Liste des événements
+                    </h1>
+                    <p class="text-gray-600">Consultez tous les événements</p>
+                </div>
+                <div class="flex gap-3">
+                    <a
+                        href="{% url 'events:calendar' %}"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                        aria-label="Voir le calendrier"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        Calendrier
+                    </a>
+                    <a
+                        href="{% url 'events:my_events' %}"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-orange-500 text-white rounded-lg hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                        aria-label="Voir mes événements"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        Mes événements
+                    </a>
+                    <a
+                        href="{% url 'events:create' %}"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-custom-blue text-white rounded-lg hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                        aria-label="Créer un nouvel événement"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Créer un événement
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Filtres -->
+    <section id="events-list-app" class="bg-white shadow-md rounded-xl p-6 mb-6 border border-gray-100">
+        <div class="flex flex-col md:flex-row gap-4 mb-4">
+            <div class="flex-1">
+                <label for="search-input" class="block text-sm font-medium text-gray-700 mb-2">
+                    Rechercher
+                </label>
+                <div class="relative">
+                    <input
+                        type="text"
+                        id="search-input"
+                        v-model="searchQuery"
+                        placeholder="Rechercher par titre, lieu..."
+                        class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-custom-blue focus:border-transparent"
+                        aria-label="Rechercher un événement"
+                    />
+                    <svg class="w-5 h-5 absolute left-3 top-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="flex-1">
+                <label for="secteur-filter" class="block text-sm font-medium text-gray-700 mb-2">
+                    Secteur
+                </label>
+                <select
+                    id="secteur-filter"
+                    v-model="secteurFilter"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-custom-blue focus:border-transparent"
+                    aria-label="Filtrer par secteur"
+                >
+                    <option value="">Tous les secteurs</option>
+                    <option v-for="secteur in secteurs" :key="secteur.id" :value="secteur.id">
+                        {{ secteur.nom }}
+                    </option>
+                </select>
+            </div>
+            <div class="flex-1">
+                <label for="sort-select" class="block text-sm font-medium text-gray-700 mb-2">
+                    Trier par
+                </label>
+                <select
+                    id="sort-select"
+                    v-model="sortField"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-custom-blue focus:border-transparent"
+                    aria-label="Trier les événements"
+                >
+                    <option value="date">Date (plus récent)</option>
+                    <option value="date_asc">Date (plus ancien)</option>
+                    <option value="titre">Titre (A-Z)</option>
+                    <option value="lieu">Lieu (A-Z)</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Formulaire Django pour la soumission (caché) -->
+        <form method="get" id="filter-form" style="display: none;">
+            <input type="hidden" name="secteur" :value="secteurFilter" />
+            <input type="hidden" name="date_debut" :value="dateDebut" />
+            <input type="hidden" name="date_fin" :value="dateFin" />
+        </form>
+    </section>
+
+    <!-- Liste des événements -->
+    <section class="bg-white shadow-md rounded-xl p-6 md:p-8 border border-gray-100">
+        {% if page_obj %}
+        <!-- Version Vue.js -->
+        <div id="events-vue" v-if="filteredEvents.length > 0" class="space-y-4" style="display: none;">
+            <div
+                v-for="event in filteredEvents"
+                :key="event.id"
+                class="border-2 border-gray-200 rounded-xl p-6 hover:border-custom-blue hover:shadow-lg transition-all duration-200"
+            >
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div class="flex-grow">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div
+                                class="w-4 h-4 rounded"
+                                :style="`background-color: ${event.couleur || '#808080'};`"
+                                aria-label="Couleur de l'événement"
+                            ></div>
+                            <h3 class="text-lg font-semibold text-gray-900">
+                                <a
+                                    :href="event.detail_url"
+                                    class="hover:text-custom-blue transition-colors duration-200"
+                                >
+                                    {{ event.titre }}
+                                </a>
+                            </h3>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <span>{{ event.date_debut }}</span>
+                                <span v-if="event.date_fin">- {{ event.date_fin }}</span>
+                            </div>
+                            <div v-if="event.lieu" class="flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <span>{{ event.lieu }}</span>
+                            </div>
+                            <div v-if="event.secteurs && event.secteurs.length > 0" class="flex items-center gap-2 flex-wrap">
+                                <span
+                                    v-for="secteur in event.secteurs"
+                                    :key="secteur.id"
+                                    class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium text-white"
+                                    :style="`background-color: ${secteur.couleur};`"
+                                >
+                                    {{ secteur.nom }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <a
+                            :href="event.detail_url"
+                            class="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                            :aria-label="`Voir les détails de ${event.titre}`"
+                        >
+                            Voir
+                        </a>
+                        <a
+                            v-if="event.can_edit"
+                            :href="event.update_url"
+                            class="px-4 py-2 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+                            :aria-label="`Modifier ${event.titre}`"
+                        >
+                            Modifier
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div v-else class="text-center py-12">
+            <p class="text-gray-600 mb-4">Aucun événement ne correspond à votre recherche.</p>
+        </div>
+        
+        <!-- Version Django (fallback) -->
+        <div id="events-django" class="space-y-4">
+            {% for event in page_obj %}
+            <div class="border-2 border-gray-200 rounded-xl p-6 hover:border-custom-blue hover:shadow-lg transition-all duration-200">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div class="flex-grow">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div
+                                class="w-4 h-4 rounded"
+                                style="background-color: {{ event.couleur_calendrier|default:'#808080' }};"
+                                aria-label="Couleur de l'événement"
+                            ></div>
+                            <h3 class="text-lg font-semibold text-gray-900">
+                                <a
+                                    href="{% url 'events:detail' event.pk %}"
+                                    class="hover:text-custom-blue transition-colors duration-200"
+                                >
+                                    {{ event.titre }}
+                                </a>
+                            </h3>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <span>{{ event.date_debut|date:"d/m/Y H:i" }}</span>
+                                {% if event.date_fin %}
+                                <span>-</span>
+                                <span>{{ event.date_fin|date:"d/m/Y H:i" }}</span>
+                                {% endif %}
+                            </div>
+                            {% if event.lieu %}
+                            <div class="flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <span>{{ event.lieu }}</span>
+                            </div>
+                            {% endif %}
+                            {% if event.secteurs.all %}
+                            <div class="flex items-center gap-2 flex-wrap">
+                                {% for secteur in event.secteurs.all %}
+                                <span
+                                    class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium text-white"
+                                    style="background-color: {{ secteur.couleur }};"
+                                >
+                                    {{ secteur.nom }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <a
+                            href="{% url 'events:detail' event.pk %}"
+                            class="px-4 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                            aria-label="Voir les détails de {{ event.titre }}"
+                        >
+                            Voir
+                        </a>
+                        {% if request.user.is_superuser or event.createur == request.user %}
+                        <a
+                            href="{% url 'events:update' event.pk %}"
+                            class="px-4 py-2 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+                            aria-label="Modifier {{ event.titre }}"
+                        >
+                            Modifier
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Pagination des événements" class="mt-8 flex justify-center">
+            <div class="flex gap-2">
+                {% if page_obj.has_previous %}
+                <a
+                    href="?page={{ page_obj.previous_page_number }}{% if request.GET.secteur %}&secteur={{ request.GET.secteur }}{% endif %}{% if request.GET.date_debut %}&date_debut={{ request.GET.date_debut }}{% endif %}{% if request.GET.date_fin %}&date_fin={{ request.GET.date_fin }}{% endif %}"
+                    class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    aria-label="Page précédente"
+                >
+                    Précédent
+                </a>
+                {% endif %}
+                
+                <span class="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-700">
+                    Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+                </span>
+                
+                {% if page_obj.has_next %}
+                <a
+                    href="?page={{ page_obj.next_page_number }}{% if request.GET.secteur %}&secteur={{ request.GET.secteur }}{% endif %}{% if request.GET.date_debut %}&date_debut={{ request.GET.date_debut }}{% endif %}{% if request.GET.date_fin %}&date_fin={{ request.GET.date_fin }}{% endif %}"
+                    class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    aria-label="Page suivante"
+                >
+                    Suivant
+                </a>
+                {% endif %}
+            </div>
+        </nav>
+        {% endif %}
+        {% else %}
+        <div class="text-center py-12">
+            <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <p class="text-gray-600 mb-4">Aucun événement trouvé.</p>
+            <a
+                href="{% url 'events:create' %}"
+                class="inline-flex items-center gap-2 px-6 py-3 bg-custom-blue text-white rounded-lg hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+            >
+                Créer le premier événement
+            </a>
+        </div>
+        {% endif %}
+    </section>
+</div>
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Vérifier que Vue.js est disponible
+    if (typeof Vue === 'undefined') {
+        // Afficher le fallback Django
+        const vueApp = document.getElementById('events-list-app');
+        const vueList = document.getElementById('events-vue');
+        const djangoList = document.getElementById('events-django');
+        if (vueApp && vueList && djangoList) {
+            vueList.style.display = 'none';
+            djangoList.style.display = 'block';
+        }
+        return;
+    }
+
+    const { createApp } = Vue;
+
+    createApp({
+        data() {
+            return {
+                events: [
+                    {% for event in page_obj %}
+                    {
+                        id: {{ event.pk }},
+                        titre: '{{ event.titre|escapejs }}',
+                        lieu: '{{ event.lieu|default:""|escapejs }}',
+                        date_debut: '{{ event.date_debut|date:"d/m/Y H:i" }}',
+                        date_fin: '{{ event.date_fin|date:"d/m/Y H:i"|default:"" }}',
+                        couleur: '{{ event.couleur_calendrier|default:"#808080" }}',
+                        secteurs: [
+                            {% for secteur in event.secteurs.all %}
+                            {
+                                id: {{ secteur.pk }},
+                                nom: '{{ secteur.nom|escapejs }}',
+                                couleur: '{{ secteur.couleur }}',
+                            },
+                            {% endfor %}
+                        ],
+                        detail_url: '{% url "events:detail" event.pk %}',
+                        update_url: '{% url "events:update" event.pk %}',
+                        can_edit: {% if request.user.is_superuser or event.createur == request.user %}true{% else %}false{% endif %},
+                    },
+                    {% endfor %}
+                ],
+                secteurs: [
+                    {% for secteur in secteurs %}
+                    {
+                        id: {{ secteur.pk }},
+                        nom: '{{ secteur.nom|escapejs }}',
+                        couleur: '{{ secteur.couleur }}',
+                    },
+                    {% endfor %}
+                ],
+                searchQuery: '',
+                secteurFilter: '{{ request.GET.secteur|default:"" }}',
+                dateDebut: '{{ request.GET.date_debut|default:"" }}',
+                dateFin: '{{ request.GET.date_fin|default:"" }}',
+                sortField: 'date',
+            };
+        },
+        computed: {
+            filteredEvents() {
+                let filtered = this.events;
+
+                // Filtre par recherche
+                if (this.searchQuery.trim()) {
+                    const query = this.searchQuery.toLowerCase().trim();
+                    filtered = filtered.filter(event => 
+                        event.titre.toLowerCase().includes(query) ||
+                        (event.lieu && event.lieu.toLowerCase().includes(query))
+                    );
+                }
+
+                // Filtre par secteur
+                if (this.secteurFilter !== '') {
+                    const secteurId = parseInt(this.secteurFilter);
+                    filtered = filtered.filter(event => 
+                        event.secteurs.some(s => s.id === secteurId)
+                    );
+                }
+
+                // Tri
+                filtered = [...filtered].sort((a, b) => {
+                    if (this.sortField === 'date') {
+                        return new Date(b.date_debut) - new Date(a.date_debut);
+                    } else if (this.sortField === 'date_asc') {
+                        return new Date(a.date_debut) - new Date(b.date_debut);
+                    } else if (this.sortField === 'titre') {
+                        return a.titre.localeCompare(b.titre);
+                    } else if (this.sortField === 'lieu') {
+                        return (a.lieu || '').localeCompare(b.lieu || '');
+                    }
+                    return 0;
+                });
+
+                return filtered;
+            },
+        },
+        mounted() {
+            // Masquer le fallback Django et afficher la version Vue.js
+            const vueList = document.getElementById('events-vue');
+            const djangoList = document.getElementById('events-django');
+            if (vueList && djangoList) {
+                djangoList.style.display = 'none';
+                vueList.style.display = 'block';
+            }
+        },
+    }).mount('#events-list-app');
+});
+</script>
+{% endblock %}
+{% endblock %}
+
+
+
+

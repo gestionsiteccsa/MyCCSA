@@ -1,0 +1,403 @@
+{% extends "base.html" %}
+
+{% block title %}Créer un rôle{% endblock %}
+{% block description %}Créer un nouveau rôle hiérarchique{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <header class="mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-100">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                Créer un rôle
+            </h1>
+            <p class="text-gray-600">Ajoutez un nouveau rôle hiérarchique</p>
+        </div>
+    </header>
+
+    <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Sidebar Navigation (Desktop) -->
+        <aside class="hidden lg:block lg:w-64 flex-shrink-0">
+            <nav aria-label="Navigation de gestion des rôles" class="bg-white rounded-xl shadow-md border border-gray-100 p-4 sticky top-24">
+                <ul class="space-y-2">
+                    <li>
+                        {% url 'role:user_list' as role_user_list_url %}
+                        {% if role_user_list_url %}
+                        <a
+                            href="{{ role_user_list_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <span class="font-medium">Utilisateurs</span>
+                        </a>
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% url 'role:list' as role_list_url %}
+                        {% if role_list_url %}
+                        <a
+                            href="{{ role_list_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                            <span class="font-medium">Liste des rôles</span>
+                        </a>
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% url 'role:create' as role_create_url %}
+                        <a
+                            href="{{ role_create_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg bg-custom-blue text-white focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                            aria-current="page"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            <span class="font-medium">Créer un rôle</span>
+                        </a>
+                    </li>
+                    <li>
+                        {% url 'dashboard:index' as dashboard_url %}
+                        {% if dashboard_url %}
+                        <a
+                            href="{{ dashboard_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                            </svg>
+                            <span class="font-medium">Dashboard</span>
+                        </a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Onglets Navigation (Mobile/Tablet) -->
+        <div class="lg:hidden mb-6">
+            <nav aria-label="Navigation de gestion des rôles" class="bg-white rounded-xl shadow-md border border-gray-100 p-2">
+                <div class="flex overflow-x-auto scrollbar-hide">
+                    {% url 'role:user_list' as role_user_list_url %}
+                    {% if role_user_list_url %}
+                    <a
+                        href="{{ role_user_list_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    >
+                        Utilisateurs
+                    </a>
+                    {% endif %}
+                    {% url 'role:list' as role_list_url %}
+                    {% if role_list_url %}
+                    <a
+                        href="{{ role_list_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    >
+                        Liste des rôles
+                    </a>
+                    {% endif %}
+                    {% url 'role:create' as role_create_url %}
+                    <a
+                        href="{{ role_create_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium bg-custom-blue text-white"
+                    >
+                        Créer un rôle
+                    </a>
+                    {% url 'dashboard:index' as dashboard_url %}
+                    {% if dashboard_url %}
+                    <a
+                        href="{{ dashboard_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    >
+                        Dashboard
+                    </a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+
+        <!-- Contenu principal -->
+        <main class="flex-1">
+            <!-- Formulaire -->
+            <section class="bg-white shadow-md rounded-xl p-6 md:p-8 border border-gray-100">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div role="alert" class="mb-6 p-4 bg-red-100 text-red-800 rounded-lg border border-red-200">
+                        <ul class="list-disc list-inside space-y-1">
+                            {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <div id="role-form-app" class="space-y-6">
+                        <!-- Nom -->
+                        <div>
+                            <label for="{{ form.nom.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ form.nom.label }}
+                                <span class="text-red-600" aria-label="Champ obligatoire">*</span>
+                            </label>
+                            <div class="relative">
+                                <input
+                                    type="text"
+                                    id="{{ form.nom.id_for_label }}"
+                                    name="{{ form.nom.name }}"
+                                    v-model="nom"
+                                    @input="validateNom"
+                                    @blur="validateNom"
+                                    :class="nomError ? 'border-red-500 focus:ring-red-500' : (nomValid ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-custom-blue')"
+                                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors duration-200"
+                                    placeholder="Nom du rôle"
+                                    aria-label="Nom du rôle"
+                                    required
+                                    :aria-invalid="nomError ? 'true' : 'false'"
+                                    :aria-describedby="nomError ? 'nom-error' : (nomValid ? 'nom-success' : 'nom-help')"
+                                />
+                                <div v-if="nomValid && !nomError" class="absolute right-3 top-2.5" aria-hidden="true">
+                                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div v-if="nomError" id="nom-error" role="alert" class="mt-2 text-sm text-red-600">
+                                <p>{{ nomError }}</p>
+                            </div>
+                            <div v-else-if="nomValid" id="nom-success" class="mt-2 text-sm text-green-600">
+                                <p>Nom valide</p>
+                            </div>
+                            <p v-else id="nom-help" class="mt-1 text-sm text-gray-500">
+                                {{ nom.length }}/200 caractères (minimum 2)
+                            </p>
+                            {% if form.nom.errors %}
+                            <div role="alert" class="mt-2 text-sm text-red-600">
+                                {% for error in form.nom.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Niveau -->
+                        <div>
+                            <label for="{{ form.niveau.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                                {{ form.niveau.label }}
+                                <span class="text-red-600" aria-label="Champ obligatoire">*</span>
+                            </label>
+                            <div class="relative">
+                                <input
+                                    type="number"
+                                    id="{{ form.niveau.id_for_label }}"
+                                    name="{{ form.niveau.name }}"
+                                    v-model.number="niveau"
+                                    @input="checkLevelAvailability"
+                                    @blur="checkLevelAvailability"
+                                    min="0"
+                                    :class="niveauError ? 'border-red-500 focus:ring-red-500' : (niveauValid && !checkingLevel ? 'border-green-500 focus:ring-green-500' : 'border-gray-300 focus:ring-custom-blue')"
+                                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-colors duration-200"
+                                    aria-label="Niveau hiérarchique"
+                                    required
+                                    :aria-invalid="niveauError ? 'true' : 'false'"
+                                    :aria-describedby="niveauError ? 'niveau-error' : (niveauValid && !checkingLevel ? 'niveau-success' : 'niveau-help')"
+                                />
+                                <div v-if="checkingLevel" class="absolute right-3 top-2.5" aria-hidden="true">
+                                    <svg class="animate-spin h-5 w-5 text-custom-blue" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </div>
+                                <div v-else-if="niveauValid && !niveauError" class="absolute right-3 top-2.5" aria-hidden="true">
+                                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div v-if="niveauError" id="niveau-error" role="alert" class="mt-2 text-sm text-red-600">
+                                <p>{{ niveauError }}</p>
+                            </div>
+                            <div v-else-if="niveauValid && !checkingLevel" id="niveau-success" class="mt-2 text-sm text-green-600">
+                                <p>Niveau disponible</p>
+                            </div>
+                            <p v-else id="niveau-help" class="mt-1 text-sm text-gray-500">
+                                {{ form.niveau.help_text }}
+                            </p>
+                            {% if form.niveau.errors %}
+                            <div role="alert" class="mt-2 text-sm text-red-600">
+                                {% for error in form.niveau.errors %}
+                                <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="mt-8 flex gap-4 justify-end">
+                        {% url 'role:list' as role_list_url %}
+                        {% if role_list_url %}
+                        <a
+                            href="{{ role_list_url }}"
+                            class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 font-semibold"
+                        >
+                            Annuler
+                        </a>
+                        {% endif %}
+                        <button
+                            type="submit"
+                            id="submit-button"
+                            :disabled="!isFormValid || isSubmitting"
+                            :class="!isFormValid || isSubmitting ? 'opacity-50 cursor-not-allowed' : ''"
+                            class="px-6 py-3 bg-custom-blue text-white rounded-lg hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <span v-if="isSubmitting">Création en cours...</span>
+                            <span v-else>Créer le rôle</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+</div>
+
+{% block extra_scripts %}
+<style>
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+</style>
+<script>
+// Protection contre le double montage
+if (window.roleFormAppMounted) {
+    // L'app est déjà montée, ne rien faire
+    console.log('Role form app already mounted, skipping');
+} else {
+    window.roleFormAppMounted = true;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Vérifier que Vue.js est disponible
+        if (typeof Vue === 'undefined') {
+            return;
+        }
+
+        const { createApp } = Vue;
+
+    createApp({
+        data() {
+            return {
+                nom: '',
+                niveau: null,
+                nomError: null,
+                nomValid: false,
+                niveauError: null,
+                niveauValid: false,
+                checkingLevel: false,
+                levelCheckTimeout: null,
+                isSubmitting: false,
+            };
+        },
+        computed: {
+            isFormValid() {
+                return this.nomValid && this.niveauValid && !this.nomError && !this.niveauError;
+            },
+        },
+        methods: {
+            validateNom() {
+                const nom = this.nom.trim();
+                
+                if (nom.length === 0) {
+                    this.nomError = null;
+                    this.nomValid = false;
+                    return;
+                }
+                
+                if (nom.length < 2) {
+                    this.nomError = 'Le nom du rôle doit contenir au moins 2 caractères.';
+                    this.nomValid = false;
+                    return;
+                }
+                
+                if (nom.length > 200) {
+                    this.nomError = 'Le nom du rôle ne peut pas dépasser 200 caractères.';
+                    this.nomValid = false;
+                    return;
+                }
+                
+                this.nomError = null;
+                this.nomValid = true;
+            },
+            async checkLevelAvailability() {
+                // Réinitialiser
+                this.niveauError = null;
+                this.niveauValid = false;
+                
+                // Annuler le timeout précédent
+                if (this.levelCheckTimeout) {
+                    clearTimeout(this.levelCheckTimeout);
+                }
+                
+                // Vérifier que le niveau est valide
+                if (this.niveau === null || this.niveau === '') {
+                    return;
+                }
+                
+                const niveau = parseInt(this.niveau);
+                if (isNaN(niveau) || niveau < 0) {
+                    this.niveauError = 'Le niveau doit être un nombre positif ou nul.';
+                    return;
+                }
+                
+                // Attendre un peu avant de vérifier (debounce)
+                this.checkingLevel = true;
+                this.levelCheckTimeout = setTimeout(async () => {
+                    try {
+                        const response = await fetch(`{% url 'role:check_level' %}?niveau=${niveau}`);
+                        const data = await response.json();
+                        
+                        if (data.available) {
+                            this.niveauError = null;
+                            this.niveauValid = true;
+                        } else {
+                            this.niveauError = `Un rôle avec le niveau ${niveau} existe déjà (${data.existing_role}).`;
+                            this.niveauValid = false;
+                        }
+                    } catch (error) {
+                        console.error('Erreur lors de la vérification du niveau:', error);
+                        // Ne pas bloquer la soumission en cas d'erreur
+                        this.niveauValid = true;
+                    } finally {
+                        this.checkingLevel = false;
+                    }
+                }, 500);
+            },
+        },
+        mounted() {
+            // Écouter la soumission du formulaire
+            const form = document.querySelector('form[method="post"]');
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    if (!this.isFormValid) {
+                        e.preventDefault();
+                        return false;
+                    }
+                    this.isSubmitting = true;
+                });
+            }
+        },
+    }).mount('#role-form-app');
+    });
+}
+</script>
+{% endblock %}
+{% endblock %}
+

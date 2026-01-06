@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Statistiques des événements - MyCCSA{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <header class="mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-100">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+                <svg class="w-8 h-8 text-custom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                Statistiques des événements
+            </h1>
+            <p class="text-gray-600">Vue d'ensemble et indicateurs clés de performance (Année {{ current_year }})</p>
+        </div>
+    </header>
+
+    <!-- Key Metrics Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Events -->
+        <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <p class="text-sm font-medium text-gray-500 mb-1">Total Événements</p>
+            <p class="text-3xl font-bold text-gray-900">{{ total_events }}</p>
+        </div>
+
+        <!-- Validation: En attente -->
+        <div class="bg-white rounded-xl shadow-md p-6 border border-l-4 border-orange-400">
+            <p class="text-sm font-medium text-gray-500 mb-1">Validations en attente</p>
+            <p class="text-3xl font-bold text-orange-600">{{ validation_stats.en_attente }}</p>
+        </div>
+
+        <!-- Validation: Validés -->
+        <div class="bg-white rounded-xl shadow-md p-6 border border-l-4 border-green-500">
+            <p class="text-sm font-medium text-gray-500 mb-1">Événements validés</p>
+            <p class="text-3xl font-bold text-green-600">{{ validation_stats.valides }}</p>
+        </div>
+
+        <!-- Validation: Refusés -->
+        <div class="bg-white rounded-xl shadow-md p-6 border border-l-4 border-red-500">
+            <p class="text-sm font-medium text-gray-500 mb-1">Événements refusés</p>
+            <p class="text-3xl font-bold text-red-600">{{ validation_stats.refuses }}</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Monthly Evolution -->
+        <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <svg class="w-5 h-5 text-custom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                Évolution mensuelle
+            </h2>
+            
+            {% if months_data %}
+            <div class="space-y-4">
+                {% for data in months_data %}
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-sm font-medium text-gray-700">{{ data.month|date:"F Y"|capfirst }}</span>
+                        <span class="text-sm font-bold text-gray-900">{{ data.count }}</span>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-2.5">
+                        <!-- Simple visual calculation for width percentage relative to max could be done in view, here using a safe generic approach or assume max ~20 for demo -->
+                        <div class="bg-custom-blue h-2.5 rounded-full" style="width: 100%"></div> 
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 italic">Aucun événement cette année.</p>
+            {% endif %}
+        </div>
+
+        <!-- Sector Distribution -->
+        <div class="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+            <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <svg class="w-5 h-5 text-custom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+                </svg>
+                Répartition par secteur
+            </h2>
+
+            {% if events_by_sector %}
+            <div class="space-y-4">
+                {% for sector in events_by_sector %}
+                <div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <div class="w-4 h-4 rounded-full" style="background-color: {{ sector.secteurs__couleur|default:'#cbd5e1' }}"></div>
+                        <span class="font-medium text-gray-700">{{ sector.secteurs__nom|default:"Sans secteur" }}</span>
+                    </div>
+                    <span class="bg-gray-100 text-gray-800 text-sm font-bold px-3 py-1 rounded-full">
+                        {{ sector.count }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 italic">Aucune donnée de secteur.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

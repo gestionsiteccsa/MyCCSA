@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <header class="mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900">{{ title }}</h1>
+        </div>
+    </header>
+
+    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                <ul class="list-disc list-inside text-red-800 text-sm">
+                    {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="{{ form.annee.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                        {{ form.annee.label }}
+                    </label>
+                    {{ form.annee }}
+                    {% if form.annee.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.annee.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.heures_semaine.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                        {{ form.heures_semaine.label }}
+                    </label>
+                    {{ form.heures_semaine }}
+                    {% if form.heures_semaine.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.heures_semaine.errors.0 }}</p>
+                    {% endif %}
+                    <p class="mt-1 text-xs text-gray-500">Entre 35 et 39 heures</p>
+                </div>
+
+                <div>
+                    <label for="{{ form.quotite_travail.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                        {{ form.quotite_travail.label }}
+                    </label>
+                    {{ form.quotite_travail }}
+                    {% if form.quotite_travail.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.quotite_travail.errors.0 }}</p>
+                    {% endif %}
+                    <p class="mt-1 text-xs text-gray-500">0.5 pour mi-temps, 1.0 pour temps complet</p>
+                </div>
+
+                <div>
+                    <label for="{{ form.jours_ouvres_ou_ouvrables.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                        {{ form.jours_ouvres_ou_ouvrables.label }}
+                    </label>
+                    {{ form.jours_ouvres_ou_ouvrables }}
+                    {% if form.jours_ouvres_ou_ouvrables.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.jours_ouvres_ou_ouvrables.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Affichage des calculs automatiques (si cycle existe) -->
+            {% if cycle %}
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 class="text-sm font-semibold text-blue-900 mb-2">Calculs automatiques</h3>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-blue-700">RTT annuels:</span>
+                        <span class="font-semibold text-blue-900">{{ cycle.rtt_annuels }} jours</span>
+                    </div>
+                    <div>
+                        <span class="text-blue-700">Congés annuels:</span>
+                        <span class="font-semibold text-blue-900">{{ cycle.conges_annuels }} jours</span>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="flex gap-4">
+                <button
+                    type="submit"
+                    class="px-6 py-2 bg-custom-blue text-white rounded-lg hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-all duration-200 font-semibold"
+                >
+                    Enregistrer
+                </button>
+                <a
+                    href="{% url 'fractionnement:cycle_list' %}"
+                    class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 font-semibold"
+                >
+                    Annuler
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+

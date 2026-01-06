@@ -1,0 +1,15 @@
+Alerte de sécurité
+
+Bonjour {{ user.get_full_name }},
+
+{{ alert_message }}
+
+{% if ip_address %}
+Adresse IP : {{ ip_address }}
+{% endif %}
+
+Si vous n'êtes pas à l'origine de cette activité, veuillez changer votre mot de passe immédiatement et nous contacter.
+
+Cet email a été envoyé automatiquement, merci de ne pas y répondre.
+
+

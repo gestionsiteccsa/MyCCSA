@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}Gérer les secteurs de {{ user.get_full_name|default:user.email }}{% endblock %}
+{% block description %}Attribuer des secteurs à {{ user.get_full_name|default:user.email }}{% endblock %}
+
+{% block content %}
+<article class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <header class="mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-100">
+            <div class="flex items-center gap-4">
+                <a
+                    href="{% url 'secteurs:user_list' %}"
+                    class="inline-flex items-center gap-2 text-custom-blue hover:text-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 rounded-lg px-2 py-1 transition-colors duration-200"
+                    aria-label="Retour à la liste des utilisateurs"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Retour
+                </a>
+                <div class="flex-grow">
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900">
+                        Gérer les secteurs
+                    </h1>
+                    <p class="text-gray-600 mt-1">{{ user.get_full_name|default:user.email }}</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Formulaire avec Vue.js -->
+    <section class="bg-white shadow-md rounded-xl p-6 md:p-8 border border-gray-100">
+        <div id="app">
+            <form method="post" @submit.prevent="submitForm">
+                {% csrf_token %}
+                
+                <div class="mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">
+                        Sélectionnez les secteurs à attribuer
+                    </h2>
+                    <p class="text-sm text-gray-600 mb-6">
+                        Cochez les secteurs que vous souhaitez attribuer à cet utilisateur.
+                    </p>
+
+                    <!-- Version Django (fallback si Vue.js n'est pas chargé) -->
+                    <div id="secteurs-fallback" class="flex flex-wrap gap-2">
+                        {% for secteur in all_secteurs %}
+                        <div class="flex items-center gap-2 p-3 border-2 rounded-xl border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200">
+                            <input
+                                type="checkbox"
+                                id="secteur-{{ secteur.id }}"
+                                name="secteurs"
+                                value="{{ secteur.id }}"
+                                {% if secteur in user.secteurs.all %}checked{% endif %}
+                                class="w-4 h-4 text-custom-blue border-gray-300 rounded focus:ring-custom-blue focus:ring-2 cursor-pointer flex-shrink-0"
+                                aria-label="Sélectionner le secteur {{ secteur.nom }}"
+                            />
+                            <div
+                                class="w-10 h-10 rounded-lg border-2 border-gray-300 flex-shrink-0"
+                                style="background-color: {{ secteur.couleur }};"
+                                aria-label="Couleur du secteur {{ secteur.nom }}"
+                            ></div>
+                            <label
+                                for="secteur-{{ secteur.id }}"
+                                class="flex items-center gap-2 cursor-pointer whitespace-nowrap"
+                            >
+                                <span class="text-sm font-semibold text-gray-900">{{ secteur.nom }}</span>
+                                <span class="text-xs font-mono text-gray-600">{{ secteur.couleur }}</span>
+                            </label>
+                        </div>
+                        {% empty %}
+                        <div class="text-center py-8 text-gray-600 w-full">
+                            <p>Aucun secteur disponible pour le moment.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Version Vue.js (masquée par défaut, affichée quand Vue.js charge) -->
+                    <div id="secteurs-vue" v-show="secteurs.length > 0" class="flex flex-wrap gap-2" style="display: none;">
+                        <div
+                            v-for="secteur in secteurs"
+                            :key="secteur.id"
+                            class="flex items-center gap-2 p-3 border-2 rounded-xl transition-all duration-200 cursor-pointer"
+                            :class="selectedSecteurs.includes(secteur.id) ? 'border-custom-blue bg-blue-50' : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'"
+                            @click="toggleSecteur(secteur.id)"
+                            role="checkbox"
+                            :aria-checked="selectedSecteurs.includes(secteur.id)"
+                            tabindex="0"
+                            @keydown.enter.prevent="toggleSecteur(secteur.id)"
+                            @keydown.space.prevent="toggleSecteur(secteur.id)"
+                        >
+                            <input
+                                type="checkbox"
+                                :id="'secteur-' + secteur.id"
+                                :name="'secteurs'"
+                                :value="secteur.id"
+                                v-model="selectedSecteurs"
+                                class="w-4 h-4 text-custom-blue border-gray-300 rounded focus:ring-custom-blue focus:ring-2 cursor-pointer flex-shrink-0"
+                                :aria-label="'Sélectionner le secteur ' + secteur.nom"
+                                @click.stop
+                            />
+                            <div
+                                class="w-10 h-10 rounded-lg border-2 border-gray-300 flex-shrink-0"
+                                :style="{ backgroundColor: secteur.couleur }"
+                                :aria-label="'Couleur du secteur ' + secteur.nom"
+                            ></div>
+                            <label
+                                :for="'secteur-' + secteur.id"
+                                class="flex items-center gap-2 cursor-pointer whitespace-nowrap"
+                            >
+                                <span class="text-sm font-semibold text-gray-900">{{ secteur.nom }}</span>
+                                <span class="text-xs font-mono text-gray-600">{{ secteur.couleur }}</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hidden inputs pour le formulaire Django (seront remplacés par submitForm) -->
+                <div v-for="secteurId in selectedSecteurs.filter(id => id && id !== '' && id !== 0)" :key="'hidden-' + secteurId">
+                    <input type="hidden" name="secteurs" :value="secteurId" />
+                </div>
+
+                <!-- Actions -->
+                <div class="mt-8 flex gap-4 justify-end pt-6 border-t border-gray-200">
+                    <a
+                        href="{% url 'secteurs:user_list' %}"
+                        class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 font-semibold"
+                    >
+                        Annuler
+                    </a>
+                    <button
+                        type="submit"
+                        class="px-6 py-3 bg-custom-blue text-white rounded-lg hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                        :disabled="isSubmitting"
+                    >
+                        <span v-if="!isSubmitting">Enregistrer les modifications</span>
+                        <span v-else>Enregistrement...</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+</article>
+
+{% block extra_scripts %}
+<script>
+    const { createApp } = Vue;
+
+    createApp({
+        data() {
+            return {
+                secteurs: [
+                    {% for secteur in all_secteurs %}
+                    {
+                        id: {{ secteur.id }},
+                        nom: '{{ secteur.nom|escapejs }}',
+                        couleur: '{{ secteur.couleur }}',
+                    },
+                    {% endfor %}
+                ],
+                selectedSecteurs: [
+                    {% for secteur in user.secteurs.all %}
+                    {{ secteur.id }},
+                    {% endfor %}
+                ],
+                isSubmitting: false,
+            };
+        },
+        methods: {
+            toggleSecteur(secteurId) {
+                const index = this.selectedSecteurs.indexOf(secteurId);
+                if (index > -1) {
+                    this.selectedSecteurs.splice(index, 1);
+                } else {
+                    this.selectedSecteurs.push(secteurId);
+                }
+            },
+            submitForm(event) {
+                this.isSubmitting = true;
+                
+                // S'assurer que les inputs cachés sont présents
+                const form = event.target;
+                
+                // Supprimer TOUS les inputs cachés existants (y compris ceux générés par v-for)
+                const allHiddenInputs = form.querySelectorAll('input[name="secteurs"][type="hidden"]');
+                allHiddenInputs.forEach(input => input.remove());
+                
+                // Filtrer les valeurs vides, null, undefined et convertir en nombres
+                const validSecteurs = this.selectedSecteurs
+                    .filter(id => id !== null && id !== undefined && id !== '' && id !== 0)
+                    .map(id => String(id));
+                
+                // Créer de nouveaux inputs cachés uniquement pour les valeurs valides
+                validSecteurs.forEach(secteurId => {
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'secteurs';
+                    hiddenInput.value = secteurId;
+                    form.appendChild(hiddenInput);
+                });
+                
+                // Le formulaire sera soumis normalement
+                form.submit();
+            },
+        },
+        mounted() {
+            // Masquer le fallback Django et afficher la version Vue.js
+            const fallback = document.getElementById('secteurs-fallback');
+            const vueVersion = document.getElementById('secteurs-vue');
+            if (fallback && vueVersion) {
+                fallback.style.display = 'none';
+                vueVersion.style.display = 'block';
+            }
+        },
+    }).mount('#app');
+</script>
+{% endblock %}
+{% endblock %}
+

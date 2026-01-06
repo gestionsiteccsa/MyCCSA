@@ -1,0 +1,457 @@
+{% extends "base.html" %}
+
+{% block title %}Inscription{% endblock %}
+{% block description %}Créez votre compte sur MyCCSA{% endblock %}
+
+{% block content %}
+<article class="max-w-2xl mx-auto" id="password-strength-app">
+    <header class="mb-8 md:mb-12">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2 flex items-center gap-3">
+            <svg class="w-8 h-8 text-custom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+            </svg>
+            Créer un compte
+        </h1>
+        <p class="text-gray-600 text-lg">
+            Remplissez le formulaire ci-dessous pour créer votre compte.
+        </p>
+    </header>
+
+    <section class="bg-white shadow-lg rounded-xl p-6 md:p-8 border border-gray-100">
+        <form method="post" class="space-y-6" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+            <div role="alert" class="p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg flex items-start gap-3 mb-6">
+                <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                    <p class="font-medium mb-1">Erreurs dans le formulaire</p>
+                    {{ form.non_field_errors }}
+                </div>
+            </div>
+            {% endif %}
+
+            <div>
+                <label for="{{ form.email.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-custom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                    {{ form.email.label }}
+                    <span class="text-red-600" aria-label="Champ obligatoire">*</span>
+                </label>
+                {{ form.email }}
+                <div v-if="email && email.length > 3 && emailValidation !== null" class="mt-2">
+                    <p v-if="emailValidation && emailValidation.valid" class="text-sm text-green-600 flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        Format d'email valide
+                    </p>
+                    <p v-else-if="emailValidation && !emailValidation.valid" class="text-sm text-red-600 flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                        </svg>
+                        Format d'email invalide
+                    </p>
+                </div>
+                {% if form.email.errors %}
+                <div id="email-error" role="alert" class="mt-2 flex items-start gap-2 text-sm text-red-600">
+                    <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>{{ form.email.errors }}</div>
+                </div>
+                {% endif %}
+                {% if form.email.help_text %}
+                <p id="email-help" class="mt-2 text-sm text-gray-500">
+                    {{ form.email.help_text }}
+                </p>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-custom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        {{ form.first_name.label }}
+                    </label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}
+                    <div id="first_name-error" role="alert" class="mt-2 flex items-start gap-2 text-sm text-red-600">
+                        <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div>{{ form.first_name.errors }}</div>
+                    </div>
+                    {% endif %}
+                    {% if form.first_name.help_text %}
+                    <p id="first_name-help" class="mt-2 text-sm text-gray-500">
+                        {{ form.first_name.help_text }}
+                    </p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-custom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        {{ form.last_name.label }}
+                    </label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}
+                    <div id="last_name-error" role="alert" class="mt-2 flex items-start gap-2 text-sm text-red-600">
+                        <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div>{{ form.last_name.errors }}</div>
+                    </div>
+                    {% endif %}
+                    {% if form.last_name.help_text %}
+                    <p id="last_name-help" class="mt-2 text-sm text-gray-500">
+                        {{ form.last_name.help_text }}
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <label for="{{ form.password1.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-custom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                    </svg>
+                    {{ form.password1.label }}
+                    <span class="text-red-600" aria-label="Champ obligatoire">*</span>
+                </label>
+                <div class="relative">
+                    {{ form.password1 }}
+                    <button
+                        type="button"
+                        @click="showPassword1 = !showPassword1"
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-blue rounded p-1"
+                        :aria-label="showPassword1 ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+                    >
+                        <svg v-if="showPassword1" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                        </svg>
+                        <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div v-if="password1 && password1.length > 0" class="mt-3">
+                    <div class="flex items-center gap-2 mb-3">
+                        <div class="flex-1 h-2.5 bg-gray-200 rounded-full overflow-hidden">
+                            <div
+                                class="h-full transition-all duration-300 rounded-full"
+                                :class="strengthClass"
+                                :style="{ width: strengthPercentage + '%' }"
+                            ></div>
+                        </div>
+                        <span class="text-xs font-semibold min-w-[70px]" :class="strengthTextClass">
+                            {{ strengthText }}
+                        </span>
+                    </div>
+                    <ul class="text-xs text-gray-600 space-y-1.5 bg-gray-50 rounded-lg p-3">
+                        <li class="flex items-center gap-2" :class="checks.length >= 8 ? 'text-green-600' : 'text-gray-500'">
+                            <span v-if="checks.length >= 8" class="text-green-600">✓</span>
+                            <span v-else class="text-gray-400">○</span>
+                            Au moins 8 caractères
+                        </li>
+                        <li class="flex items-center gap-2" :class="checks.hasLowercase ? 'text-green-600' : 'text-gray-500'">
+                            <span v-if="checks.hasLowercase" class="text-green-600">✓</span>
+                            <span v-else class="text-gray-400">○</span>
+                            Une minuscule
+                        </li>
+                        <li class="flex items-center gap-2" :class="checks.hasUppercase ? 'text-green-600' : 'text-gray-500'">
+                            <span v-if="checks.hasUppercase" class="text-green-600">✓</span>
+                            <span v-else class="text-gray-400">○</span>
+                            Une majuscule
+                        </li>
+                        <li class="flex items-center gap-2" :class="checks.hasNumber ? 'text-green-600' : 'text-gray-500'">
+                            <span v-if="checks.hasNumber" class="text-green-600">✓</span>
+                            <span v-else class="text-gray-400">○</span>
+                            Un chiffre
+                        </li>
+                        <li class="flex items-center gap-2" :class="checks.hasSpecial ? 'text-green-600' : 'text-gray-500'">
+                            <span v-if="checks.hasSpecial" class="text-green-600">✓</span>
+                            <span v-else class="text-gray-400">○</span>
+                            Un caractère spécial
+                        </li>
+                    </ul>
+                </div>
+                {% if form.password1.errors %}
+                <div id="password1-error" role="alert" class="mt-2 flex items-start gap-2 text-sm text-red-600">
+                    <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>{{ form.password1.errors }}</div>
+                </div>
+                {% endif %}
+                {% if form.password1.help_text %}
+                <p id="password1-help" class="mt-2 text-sm text-gray-500">
+                    {{ form.password1.help_text }}
+                </p>
+                {% endif %}
+            </div>
+
+            <div>
+                <label for="{{ form.password2.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-custom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    {{ form.password2.label }}
+                    <span class="text-red-600" aria-label="Champ obligatoire">*</span>
+                </label>
+                <div class="relative">
+                    {{ form.password2 }}
+                    <button
+                        type="button"
+                        @click="showPassword2 = !showPassword2"
+                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-blue rounded p-1"
+                        :aria-label="showPassword2 ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+                    >
+                        <svg v-if="showPassword2" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path>
+                        </svg>
+                        <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div v-if="password2 && password2.length > 0 && password1 && password1.length > 0" class="mt-2">
+                    <p v-if="passwordMatch" class="text-sm text-green-600 flex items-center gap-1.5 bg-green-50 border border-green-200 rounded-lg p-2">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        Les mots de passe correspondent
+                    </p>
+                    <p v-else-if="password2.length > 0 && password1.length > 0" class="text-sm text-red-600 flex items-center gap-1.5 bg-red-50 border border-red-200 rounded-lg p-2">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                        </svg>
+                        Les mots de passe ne correspondent pas
+                    </p>
+                </div>
+                {% if form.password2.errors %}
+                <div id="password2-error" role="alert" class="mt-2 flex items-start gap-2 text-sm text-red-600">
+                    <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>{{ form.password2.errors }}</div>
+                </div>
+                {% endif %}
+                {% if form.password2.help_text %}
+                <p id="password2-help" class="mt-2 text-sm text-gray-500">
+                    {{ form.password2.help_text }}
+                </p>
+                {% endif %}
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-gray-200">
+                <button
+                    type="submit"
+                    class="flex-1 px-6 py-3 bg-custom-blue text-white rounded-lg hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg transform hover:scale-[1.02] flex items-center justify-center gap-2"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                    </svg>
+                    Créer mon compte
+                </button>
+                <a
+                    href="{% url 'accounts:login' %}"
+                    class="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors font-medium text-center flex items-center justify-center gap-2"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                    </svg>
+                    Déjà un compte ?
+                </a>
+            </div>
+        </form>
+    </section>
+</article>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function initVueApp() {
+    if (typeof Vue === 'undefined') {
+        setTimeout(initVueApp, 50);
+        return;
+    }
+    
+    try {
+        const { createApp } = Vue;
+
+createApp({
+    data() {
+        return {
+            email: '',
+            password1: '',
+            password2: '',
+            showPassword1: false,
+            showPassword2: false,
+            emailValidation: null
+        };
+    },
+    computed: {
+        checks() {
+            const pwd = this.password1;
+            return {
+                length: pwd.length,
+                hasLowercase: /[a-z]/.test(pwd),
+                hasUppercase: /[A-Z]/.test(pwd),
+                hasNumber: /[0-9]/.test(pwd),
+                hasSpecial: /[^a-zA-Z0-9]/.test(pwd)
+            };
+        },
+        strengthScore() {
+            const checks = this.checks;
+            let score = 0;
+            if (checks.length >= 8) score += 1;
+            if (checks.length >= 12) score += 1;
+            if (checks.hasLowercase) score += 1;
+            if (checks.hasUppercase) score += 1;
+            if (checks.hasNumber) score += 1;
+            if (checks.hasSpecial) score += 1;
+            return score;
+        },
+        strengthPercentage() {
+            return (this.strengthScore / 6) * 100;
+        },
+        strengthText() {
+            if (this.strengthScore <= 2) return 'Faible';
+            if (this.strengthScore <= 4) return 'Moyen';
+            if (this.strengthScore <= 5) return 'Fort';
+            return 'Très fort';
+        },
+        strengthClass() {
+            if (this.strengthScore <= 2) return 'bg-red-500';
+            if (this.strengthScore <= 4) return 'bg-yellow-500';
+            if (this.strengthScore <= 5) return 'bg-blue-500';
+            return 'bg-green-500';
+        },
+        strengthTextClass() {
+            if (this.strengthScore <= 2) return 'text-red-600';
+            if (this.strengthScore <= 4) return 'text-yellow-600';
+            if (this.strengthScore <= 5) return 'text-blue-600';
+            return 'text-green-600';
+        },
+        passwordMatch() {
+            return this.password1 && this.password2 && this.password1 === this.password2;
+        }
+    },
+    methods: {
+        validateEmail(email) {
+            if (!email || email.length < 5) {
+                return null;
+            }
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return {
+                valid: emailRegex.test(email),
+                message: emailRegex.test(email) ? 'Format valide' : 'Format invalide'
+            };
+        }
+    },
+    watch: {
+        email(newVal) {
+            if (!newVal || newVal.length < 5) {
+                this.emailValidation = null;
+            }
+        }
+    },
+    mounted() {
+        const emailInput = document.getElementById('{{ form.email.id_for_label }}');
+        const password1Input = document.getElementById('{{ form.password1.id_for_label }}');
+        const password2Input = document.getElementById('{{ form.password2.id_for_label }}');
+        
+        if (emailInput) {
+            let emailTimeout;
+            emailInput.addEventListener('input', (e) => {
+                this.email = e.target.value;
+                clearTimeout(emailTimeout);
+                if (!this.email || this.email.length < 5) {
+                    this.emailValidation = null;
+                } else {
+                    emailTimeout = setTimeout(() => {
+                        this.emailValidation = this.validateEmail(this.email);
+                    }, 500);
+                }
+            });
+        }
+        
+        if (password1Input) {
+            password1Input.addEventListener('input', (e) => {
+                this.password1 = e.target.value;
+                if (password1Input.type === 'password' && this.showPassword1) {
+                    password1Input.type = 'text';
+                } else if (password1Input.type === 'text' && !this.showPassword1) {
+                    password1Input.type = 'password';
+                }
+            });
+        }
+        
+        if (password2Input) {
+            password2Input.addEventListener('input', (e) => {
+                this.password2 = e.target.value;
+                if (password2Input.type === 'password' && this.showPassword2) {
+                    password2Input.type = 'text';
+                } else if (password2Input.type === 'text' && !this.showPassword2) {
+                    password2Input.type = 'password';
+                }
+            });
+        }
+    },
+    watch: {
+        showPassword1(newVal) {
+            const input = document.getElementById('{{ form.password1.id_for_label }}');
+            if (input) {
+                input.type = newVal ? 'text' : 'password';
+            }
+        },
+        showPassword2(newVal) {
+            const input = document.getElementById('{{ form.password2.id_for_label }}');
+            if (input) {
+                input.type = newVal ? 'text' : 'password';
+            }
+        }
+    }
+}).mount('#password-strength-app');
+    } catch (error) {
+        console.error('Error initializing Vue app:', error);
+    }
+}
+
+// Wait for Vue.js to be loaded (it's loaded with defer attribute)
+if (typeof Vue !== 'undefined') {
+    initVueApp();
+} else {
+    // Wait for DOMContentLoaded and then check for Vue
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            waitForVue();
+        });
+    } else {
+        waitForVue();
+    }
+}
+
+function waitForVue() {
+    if (typeof Vue !== 'undefined') {
+        initVueApp();
+    } else {
+        // Retry after a short delay (Vue.js with defer should load soon)
+        setTimeout(waitForVue, 50);
+    }
+}
+</script>
+{% endblock %}
+
+

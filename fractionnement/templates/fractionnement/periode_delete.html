@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Supprimer la période de congé{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <header class="mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Supprimer la période de congé</h1>
+        </div>
+    </header>
+
+    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <p class="text-red-800 font-semibold">Attention ! Cette action est irréversible.</p>
+        </div>
+
+        <p class="mb-6">Êtes-vous sûr de vouloir supprimer la période du <strong>{{ periode.date_debut|date:"d/m/Y" }}</strong> au <strong>{{ periode.date_fin|date:"d/m/Y" }}</strong> ?</p>
+
+        <form method="post" class="flex gap-4">
+            {% csrf_token %}
+            <button
+                type="submit"
+                class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 transition-all duration-200 font-semibold"
+            >
+                Supprimer
+            </button>
+            <a
+                href="{% url 'fractionnement:periode_list' %}"
+                class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 font-semibold"
+            >
+                Annuler
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+

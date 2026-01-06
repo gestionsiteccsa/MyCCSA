@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des secteurs{% endblock %}
+{% block description %}Gérer les secteurs d'activité{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <header class="mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-100">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                Gestion des secteurs
+            </h1>
+            <p class="text-gray-600">Gérez les secteurs d'activité et leur attribution aux utilisateurs</p>
+        </div>
+    </header>
+
+    <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Sidebar Navigation (Desktop) -->
+        <aside class="hidden lg:block lg:w-64 flex-shrink-0">
+            <nav aria-label="Navigation de gestion des secteurs" class="bg-white rounded-xl shadow-md border border-gray-100 p-4 sticky top-24">
+                <ul class="space-y-2">
+                    <li>
+                        {% url 'secteurs:user_list' as secteurs_user_list_url %}
+                        {% if secteurs_user_list_url %}
+                        <a
+                            href="{{ secteurs_user_list_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <span class="font-medium">Utilisateurs</span>
+                        </a>
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% url 'secteurs:list' as secteurs_list_url %}
+                        <a
+                            href="{{ secteurs_list_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg bg-custom-blue text-white focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                            aria-current="page"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                            <span class="font-medium">Liste des secteurs</span>
+                        </a>
+                    </li>
+                    <li>
+                        {% url 'secteurs:create' as secteurs_create_url %}
+                        {% if secteurs_create_url %}
+                        <a
+                            href="{{ secteurs_create_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            <span class="font-medium">Créer un secteur</span>
+                        </a>
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% url 'dashboard:index' as dashboard_url %}
+                        {% if dashboard_url %}
+                        <a
+                            href="{{ dashboard_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                            </svg>
+                            <span class="font-medium">Dashboard</span>
+                        </a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Onglets Navigation (Mobile/Tablet) -->
+        <div class="lg:hidden mb-6">
+            <nav aria-label="Navigation de gestion des secteurs" class="bg-white rounded-xl shadow-md border border-gray-100 p-2">
+                <div class="flex overflow-x-auto scrollbar-hide">
+                    {% url 'secteurs:user_list' as secteurs_user_list_url %}
+                    {% if secteurs_user_list_url %}
+                    <a
+                        href="{{ secteurs_user_list_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    >
+                        Utilisateurs
+                    </a>
+                    {% endif %}
+                    {% url 'secteurs:list' as secteurs_list_url %}
+                    <a
+                        href="{{ secteurs_list_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium bg-custom-blue text-white"
+                    >
+                        Liste des secteurs
+                    </a>
+                    {% url 'secteurs:create' as secteurs_create_url %}
+                    {% if secteurs_create_url %}
+                    <a
+                        href="{{ secteurs_create_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    >
+                        Créer un secteur
+                    </a>
+                    {% endif %}
+                    {% url 'dashboard:index' as dashboard_url %}
+                    {% if dashboard_url %}
+                    <a
+                        href="{{ dashboard_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    >
+                        Dashboard
+                    </a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+
+        <!-- Contenu principal -->
+        <main class="flex-1">
+            <!-- Liste des secteurs -->
+            <section class="bg-white shadow-md rounded-xl p-6 md:p-8 border border-gray-100">
+                <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-4 mb-6">
+                    <h2 class="text-xl md:text-2xl font-semibold text-gray-900 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-custom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                        </svg>
+                        Liste des secteurs
+                    </h2>
+                    {% url 'secteurs:create' as secteurs_create_url %}
+                    {% if secteurs_create_url %}
+                    <a
+                        href="{{ secteurs_create_url }}"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-custom-blue text-white rounded-lg hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                        aria-label="Créer un nouveau secteur"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Créer un secteur
+                    </a>
+                    {% endif %}
+                </div>
+
+                {% if page_obj %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for secteur in page_obj %}
+                    <div class="bg-white border-2 border-gray-300 rounded-xl p-6 hover:border-custom-blue hover:shadow-xl transition-all duration-200 flex flex-col">
+                        <!-- Nom du secteur -->
+                        <h3 class="text-lg font-bold text-gray-900 mb-4 leading-tight">{{ secteur.nom }}</h3>
+                        
+                        <!-- Couleur et code -->
+                        <div class="flex items-center gap-3 mb-6">
+                            <div 
+                                class="w-16 h-16 rounded-lg border-2 border-gray-400 flex-shrink-0 shadow-sm"
+                                style="background-color: {{ secteur.couleur }};"
+                                aria-label="Couleur du secteur {{ secteur.nom }}"
+                            ></div>
+                            <div class="flex-grow min-w-0">
+                                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Couleur</p>
+                                <p class="text-sm font-mono font-semibold text-gray-900">{{ secteur.couleur }}</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="mt-auto pt-4 border-t-2 border-gray-200">
+                            <div class="flex justify-end gap-2">
+                                <a
+                                    href="{% url 'secteurs:update' secteur.pk %}"
+                                    class="px-4 py-2 text-sm font-semibold bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 shadow-sm"
+                                    aria-label="Modifier le secteur {{ secteur.nom }}"
+                                >
+                                    Modifier
+                                </a>
+                                <a
+                                    href="{% url 'secteurs:delete' secteur.pk %}"
+                                    class="px-4 py-2 text-sm font-semibold bg-red-200 text-red-900 rounded-lg hover:bg-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200 shadow-sm"
+                                    aria-label="Supprimer le secteur {{ secteur.nom }}"
+                                >
+                                    Supprimer
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Pagination des secteurs" class="mt-8 flex justify-center">
+                    <div class="flex gap-2">
+                        {% if page_obj.has_previous %}
+                        <a
+                            href="?page={{ page_obj.previous_page_number }}"
+                            class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                            aria-label="Page précédente"
+                        >
+                            Précédent
+                        </a>
+                        {% endif %}
+                        
+                        <span class="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-700">
+                            Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+                        </span>
+                        
+                        {% if page_obj.has_next %}
+                        <a
+                            href="?page={{ page_obj.next_page_number }}"
+                            class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                            aria-label="Page suivante"
+                        >
+                            Suivant
+                        </a>
+                        {% endif %}
+                    </div>
+                </nav>
+                {% endif %}
+                {% else %}
+                <div class="text-center py-12">
+                    <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                    <p class="text-gray-600 mb-4">Aucun secteur n'a été créé pour le moment.</p>
+                    {% url 'secteurs:create' as secteurs_create_url %}
+                    {% if secteurs_create_url %}
+                    <a
+                        href="{{ secteurs_create_url }}"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-custom-blue text-white rounded-lg hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                    >
+                        Créer le premier secteur
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </section>
+        </main>
+    </div>
+</div>
+
+{% block extra_scripts %}
+<style>
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+</style>
+{% endblock %}
+{% endblock %}

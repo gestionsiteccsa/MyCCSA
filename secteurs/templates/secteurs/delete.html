@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Supprimer le secteur{% endblock %}
+{% block description %}Supprimer le secteur {{ secteur.nom }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <header class="mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-100">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                Supprimer le secteur
+            </h1>
+            <p class="text-gray-600">Confirmez la suppression</p>
+        </div>
+    </header>
+
+    <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Sidebar Navigation (Desktop) -->
+        <aside class="hidden lg:block lg:w-64 flex-shrink-0">
+            <nav aria-label="Navigation de gestion des secteurs" class="bg-white rounded-xl shadow-md border border-gray-100 p-4 sticky top-24">
+                <ul class="space-y-2">
+                    <li>
+                        {% url 'secteurs:user_list' as secteurs_user_list_url %}
+                        {% if secteurs_user_list_url %}
+                        <a
+                            href="{{ secteurs_user_list_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <span class="font-medium">Utilisateurs</span>
+                        </a>
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% url 'secteurs:list' as secteurs_list_url %}
+                        {% if secteurs_list_url %}
+                        <a
+                            href="{{ secteurs_list_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                            <span class="font-medium">Liste des secteurs</span>
+                        </a>
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% url 'secteurs:create' as secteurs_create_url %}
+                        {% if secteurs_create_url %}
+                        <a
+                            href="{{ secteurs_create_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            <span class="font-medium">Créer un secteur</span>
+                        </a>
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% url 'dashboard:index' as dashboard_url %}
+                        {% if dashboard_url %}
+                        <a
+                            href="{{ dashboard_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                            </svg>
+                            <span class="font-medium">Dashboard</span>
+                        </a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Onglets Navigation (Mobile/Tablet) -->
+        <div class="lg:hidden mb-6">
+            <nav aria-label="Navigation de gestion des secteurs" class="bg-white rounded-xl shadow-md border border-gray-100 p-2">
+                <div class="flex overflow-x-auto scrollbar-hide">
+                    {% url 'secteurs:user_list' as secteurs_user_list_url %}
+                    {% if secteurs_user_list_url %}
+                    <a
+                        href="{{ secteurs_user_list_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    >
+                        Utilisateurs
+                    </a>
+                    {% endif %}
+                    {% url 'secteurs:list' as secteurs_list_url %}
+                    {% if secteurs_list_url %}
+                    <a
+                        href="{{ secteurs_list_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    >
+                        Liste des secteurs
+                    </a>
+                    {% endif %}
+                    {% url 'secteurs:create' as secteurs_create_url %}
+                    {% if secteurs_create_url %}
+                    <a
+                        href="{{ secteurs_create_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    >
+                        Créer un secteur
+                    </a>
+                    {% endif %}
+                    {% url 'dashboard:index' as dashboard_url %}
+                    {% if dashboard_url %}
+                    <a
+                        href="{{ dashboard_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    >
+                        Dashboard
+                    </a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+
+        <!-- Contenu principal -->
+        <main class="flex-1">
+            <!-- Confirmation -->
+            <section class="bg-white shadow-md rounded-xl p-6 md:p-8 border border-gray-100">
+                <div role="alert" class="mb-6 p-4 bg-red-100 text-red-800 rounded-lg border border-red-200">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-6 h-6 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        <div>
+                            <h3 class="font-semibold mb-1">Attention !</h3>
+                            <p>Cette action est irréversible. Le secteur sera définitivement supprimé.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-6 p-6 bg-gray-50 rounded-lg border border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Informations du secteur</h2>
+                    <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 mb-1">Nom</dt>
+                            <dd class="text-base text-gray-900 font-medium">{{ secteur.nom }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 mb-1">Couleur</dt>
+                            <dd class="flex items-center gap-2">
+                                <div 
+                                    class="w-8 h-8 rounded border-2 border-gray-300"
+                                    style="background-color: {{ secteur.couleur }};"
+                                    aria-label="Couleur du secteur"
+                                ></div>
+                                <span class="text-base text-gray-900 font-mono">{{ secteur.couleur }}</span>
+                            </dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 mb-1">Ordre</dt>
+                            <dd class="text-base text-gray-900">{{ secteur.ordre }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 mb-1">Utilisateurs associés</dt>
+                            <dd class="text-base text-gray-900 font-medium">
+                                {{ user_count }} utilisateur{{ user_count|pluralize }}
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+
+                {% if user_count > 0 %}
+                <div role="alert" class="mb-6 p-4 bg-yellow-100 text-yellow-800 rounded-lg border border-yellow-200">
+                    <div class="flex items-start gap-3">
+                        <svg class="w-6 h-6 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        <div>
+                            <p class="font-medium mb-1">Utilisateurs associés</p>
+                            <p>Ce secteur est actuellement associé à {{ user_count }} utilisateur{{ user_count|pluralize }}. La suppression du secteur retirera cette association pour tous ces utilisateurs.</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <form method="post" class="mt-8">
+                    {% csrf_token %}
+                    <div class="flex gap-4 justify-end">
+                        {% url 'secteurs:list' as secteurs_list_url %}
+                        {% if secteurs_list_url %}
+                        <a
+                            href="{{ secteurs_list_url }}"
+                            class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 font-semibold"
+                        >
+                            Annuler
+                        </a>
+                        {% endif %}
+                        <button
+                            type="submit"
+                            class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                        >
+                            Confirmer la suppression
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+</div>
+
+{% block extra_scripts %}
+<style>
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+</style>
+{% endblock %}
+{% endblock %}

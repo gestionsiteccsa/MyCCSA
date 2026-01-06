@@ -1,0 +1,503 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des rôles{% endblock %}
+{% block description %}Gérer les rôles hiérarchiques{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <header class="mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-100">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                Gestion des rôles
+            </h1>
+            <p class="text-gray-600">Gérez les rôles hiérarchiques et leur attribution aux utilisateurs</p>
+        </div>
+    </header>
+
+    <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Sidebar Navigation (Desktop) -->
+        <aside class="hidden lg:block lg:w-64 flex-shrink-0">
+            <nav aria-label="Navigation de gestion des rôles" class="bg-white rounded-xl shadow-md border border-gray-100 p-4 sticky top-24">
+                <ul class="space-y-2">
+                    <li>
+                        {% url 'role:user_list' as role_user_list_url %}
+                        {% if role_user_list_url %}
+                        <a
+                            href="{{ role_user_list_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <span class="font-medium">Utilisateurs</span>
+                        </a>
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% url 'role:list' as role_list_url %}
+                        <a
+                            href="{{ role_list_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg bg-custom-blue text-white focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                            aria-current="page"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                            <span class="font-medium">Liste des rôles</span>
+                        </a>
+                    </li>
+                    <li>
+                        {% url 'role:create' as role_create_url %}
+                        {% if role_create_url %}
+                        <a
+                            href="{{ role_create_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            <span class="font-medium">Créer un rôle</span>
+                        </a>
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% url 'dashboard:index' as dashboard_url %}
+                        {% if dashboard_url %}
+                        <a
+                            href="{{ dashboard_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                            </svg>
+                            <span class="font-medium">Dashboard</span>
+                        </a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Onglets Navigation (Mobile/Tablet) -->
+        <div class="lg:hidden mb-6">
+            <nav aria-label="Navigation de gestion des rôles" class="bg-white rounded-xl shadow-md border border-gray-100 p-2">
+                <div class="flex overflow-x-auto scrollbar-hide">
+                    {% url 'role:user_list' as role_user_list_url %}
+                    {% if role_user_list_url %}
+                    <a
+                        href="{{ role_user_list_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    >
+                        Utilisateurs
+                    </a>
+                    {% endif %}
+                    {% url 'role:list' as role_list_url %}
+                    <a
+                        href="{{ role_list_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium bg-custom-blue text-white"
+                    >
+                        Liste des rôles
+                    </a>
+                    {% url 'role:create' as role_create_url %}
+                    {% if role_create_url %}
+                    <a
+                        href="{{ role_create_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    >
+                        Créer un rôle
+                    </a>
+                    {% endif %}
+                    {% url 'dashboard:index' as dashboard_url %}
+                    {% if dashboard_url %}
+                    <a
+                        href="{{ dashboard_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    >
+                        Dashboard
+                    </a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+
+        <!-- Contenu principal -->
+        <main class="flex-1">
+            <!-- Liste des rôles -->
+            <section class="bg-white shadow-md rounded-xl p-6 md:p-8 border border-gray-100">
+                <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-4 mb-6">
+                    <h2 class="text-xl md:text-2xl font-semibold text-gray-900 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-custom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                        Liste des rôles
+                    </h2>
+                    {% url 'role:create' as role_create_url %}
+                    {% if role_create_url %}
+                    <a
+                        href="{{ role_create_url }}"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-custom-blue text-white rounded-lg hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                        aria-label="Créer un nouveau rôle"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Créer un rôle
+                    </a>
+                    {% endif %}
+                </div>
+
+                {% if page_obj %}
+                <!-- Conteneur Vue.js avec filtres et tableau -->
+                <div id="role-list-app">
+                    <!-- Barre de recherche et filtres -->
+                    <div class="mb-6">
+                        <div class="flex flex-col md:flex-row gap-4 mb-4">
+                            <div class="flex-1">
+                                <label for="search-input" class="sr-only">Rechercher un rôle</label>
+                                <div class="relative">
+                                    <input
+                                        type="text"
+                                        id="search-input"
+                                        v-model="searchQuery"
+                                        placeholder="Rechercher par nom..."
+                                        class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-custom-blue focus:border-transparent"
+                                        aria-label="Rechercher un rôle"
+                                    />
+                                    <svg class="w-5 h-5 absolute left-3 top-2.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="md:w-48">
+                                <label for="level-filter" class="sr-only">Filtrer par niveau</label>
+                                <select
+                                    id="level-filter"
+                                    v-model="levelFilter"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-custom-blue focus:border-transparent"
+                                    aria-label="Filtrer par niveau"
+                                >
+                                    <option value="">Tous les niveaux</option>
+                                    <option v-for="level in availableLevels" :key="level" :value="level">
+                                        Niveau {{ level }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tableau Vue.js -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <button
+                                            @click="sortBy('nom')"
+                                            class="flex items-center gap-1 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-blue"
+                                            aria-label="Trier par nom"
+                                        >
+                                            Nom
+                                            <svg v-if="sortField === 'nom'" class="w-4 h-4" :class="sortOrder === 'asc' ? '' : 'transform rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <button
+                                            @click="sortBy('niveau')"
+                                            class="flex items-center gap-1 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-custom-blue"
+                                            aria-label="Trier par niveau"
+                                        >
+                                            Niveau
+                                            <svg v-if="sortField === 'niveau'" class="w-4 h-4" :class="sortOrder === 'asc' ? '' : 'transform rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                            </svg>
+                                        </button>
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Utilisateurs
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr
+                                    v-for="(role, index) in filteredRoles"
+                                    :key="role.id || index"
+                                    class="hover:bg-gray-50 transition-colors duration-200"
+                                >
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900" v-text="role.nom"></div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800">
+                                            Niveau <span v-text="role.niveau"></span>
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-600">
+                                            <span v-text="role.user_count"></span> utilisateur<span v-if="role.user_count !== 1">s</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <div class="flex justify-end gap-2">
+                                            <a
+                                                :href="role.update_url"
+                                                class="px-4 py-2 text-sm font-semibold bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 shadow-sm"
+                                                :aria-label="`Modifier le rôle ${role.nom}`"
+                                            >
+                                                Modifier
+                                            </a>
+                                            <a
+                                                :href="role.delete_url"
+                                                class="px-4 py-2 text-sm font-semibold bg-red-200 text-red-900 rounded-lg hover:bg-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200 shadow-sm"
+                                                :aria-label="`Supprimer le rôle ${role.nom}`"
+                                            >
+                                                Supprimer
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr v-if="filteredRoles.length === 0">
+                                    <td colspan="4" class="px-6 py-8 text-center text-gray-500">
+                                        Aucun rôle ne correspond à votre recherche.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Version Django (fallback si Vue.js n'est pas chargé) -->
+                <div id="roles-django-fallback" style="display: none;">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Nom
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Niveau
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Utilisateurs
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for role in page_obj %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900">{{ role.nom }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800">
+                                            Niveau {{ role.niveau }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-600">{{ role.user_count|default:role.utilisateurs.count }} utilisateur{{ role.user_count|default:role.utilisateurs.count|pluralize }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <div class="flex justify-end gap-2">
+                                            <a
+                                                href="{% url 'role:update' role.pk %}"
+                                                class="px-4 py-2 text-sm font-semibold bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 shadow-sm"
+                                                aria-label="Modifier le rôle {{ role.nom }}"
+                                            >
+                                                Modifier
+                                            </a>
+                                            <a
+                                                href="{% url 'role:delete' role.pk %}"
+                                                class="px-4 py-2 text-sm font-semibold bg-red-200 text-red-900 rounded-lg hover:bg-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200 shadow-sm"
+                                                aria-label="Supprimer le rôle {{ role.nom }}"
+                                            >
+                                                Supprimer
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Pagination des rôles" class="mt-8 flex justify-center">
+                    <div class="flex gap-2">
+                        {% if page_obj.has_previous %}
+                        <a
+                            href="?page={{ page_obj.previous_page_number }}"
+                            class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                            aria-label="Page précédente"
+                        >
+                            Précédent
+                        </a>
+                        {% endif %}
+                        
+                        <span class="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-700">
+                            Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+                        </span>
+                        
+                        {% if page_obj.has_next %}
+                        <a
+                            href="?page={{ page_obj.next_page_number }}"
+                            class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                            aria-label="Page suivante"
+                        >
+                            Suivant
+                        </a>
+                        {% endif %}
+                    </div>
+                </nav>
+                {% endif %}
+                {% else %}
+                <div class="text-center py-12">
+                    <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    <p class="text-gray-600 mb-4">Aucun rôle n'a été créé pour le moment.</p>
+                    {% url 'role:create' as role_create_url %}
+                    {% if role_create_url %}
+                    <a
+                        href="{{ role_create_url }}"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-custom-blue text-white rounded-lg hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-all duration-200 font-semibold shadow-md hover:shadow-lg"
+                    >
+                        Créer le premier rôle
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </section>
+        </main>
+    </div>
+</div>
+
+{% block extra_scripts %}
+<style>
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+</style>
+<script>
+// Protection contre le double montage
+if (window.roleListAppMounted) {
+    // L'app est déjà montée, ne rien faire
+    console.log('Role list app already mounted, skipping');
+} else {
+    window.roleListAppMounted = true;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Vérifier que Vue.js est disponible
+        if (typeof Vue === 'undefined') {
+            // Afficher le fallback Django
+            const fallback = document.getElementById('roles-django-fallback');
+            const vueApp = document.getElementById('role-list-app');
+            if (fallback && vueApp) {
+                vueApp.style.display = 'none';
+                fallback.style.display = 'block';
+            }
+            return;
+        }
+
+        const { createApp } = Vue;
+
+    createApp({
+        data() {
+            return {
+                roles: [
+                    {% for role in page_obj %}
+                    {
+                        id: {{ role.pk }},
+                        nom: '{{ role.nom|escapejs }}',
+                        niveau: {{ role.niveau }},
+                        user_count: {{ role.user_count }},
+                        update_url: '{% url "role:update" role.pk %}',
+                        delete_url: '{% url "role:delete" role.pk %}',
+                    },
+                    {% endfor %}
+                ],
+                searchQuery: '',
+                levelFilter: '',
+                sortField: 'niveau',
+                sortOrder: 'asc',
+            };
+        },
+        computed: {
+            availableLevels() {
+                const levels = [...new Set(this.roles.map(r => r.niveau))];
+                return levels.sort((a, b) => a - b);
+            },
+            filteredRoles() {
+                let filtered = this.roles;
+
+                // Filtre par recherche
+                if (this.searchQuery.trim()) {
+                    const query = this.searchQuery.toLowerCase().trim();
+                    filtered = filtered.filter(role => 
+                        role.nom && role.nom.toLowerCase().includes(query)
+                    );
+                }
+
+                // Filtre par niveau
+                if (this.levelFilter !== '') {
+                    const level = parseInt(this.levelFilter);
+                    filtered = filtered.filter(role => role.niveau === level);
+                }
+
+                // Tri
+                filtered = [...filtered].sort((a, b) => {
+                    let aVal, bVal;
+                    if (this.sortField === 'nom') {
+                        aVal = (a.nom || '').toLowerCase();
+                        bVal = (b.nom || '').toLowerCase();
+                    } else {
+                        aVal = a.niveau;
+                        bVal = b.niveau;
+                    }
+
+                    if (aVal < bVal) return this.sortOrder === 'asc' ? -1 : 1;
+                    if (aVal > bVal) return this.sortOrder === 'asc' ? 1 : -1;
+                    return 0;
+                });
+
+                return filtered;
+            },
+        },
+        methods: {
+            sortBy(field) {
+                if (this.sortField === field) {
+                    this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+                } else {
+                    this.sortField = field;
+                    this.sortOrder = 'asc';
+                }
+            },
+        },
+        mounted() {
+            // Masquer le fallback Django
+            const fallback = document.getElementById('roles-django-fallback');
+            if (fallback) {
+                fallback.style.display = 'none';
+            }
+        },
+    }).mount('#role-list-app');
+    });
+}
+</script>
+{% endblock %}
+{% endblock %}
+

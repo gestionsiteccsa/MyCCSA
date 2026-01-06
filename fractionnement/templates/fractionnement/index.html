@@ -1,0 +1,485 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Jours de fractionnement{% endblock %}
+{% block description %}Calculez vos jours de fractionnement dans la fonction publique territoriale{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/fr.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <header class="mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-100">
+            <div class="flex flex-col md:flex-row items-center md:items-start justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                        Jours de fractionnement
+                    </h1>
+                    <p class="text-gray-600">Calculez vos jours de fractionnement dans la fonction publique territoriale</p>
+                </div>
+                <div class="flex gap-3 flex-wrap">
+                    <div class="group relative">
+                        <a
+                            href="{% url 'fractionnement:cycle_list' %}"
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 transition-all duration-200 font-semibold"
+                            aria-label="Gérer les cycles hebdomadaires"
+                        >
+                            Cycles
+                        </a>
+                        <div class="invisible group-hover:visible absolute left-1/2 -translate-x-1/2 top-full mt-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10 pointer-events-none">
+                            Définissez votre temps de travail hebdomadaire et votre quotité pour calculer vos droits aux congés et RTT.
+                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
+                        </div>
+                    </div>
+
+                    <div class="group relative">
+                        <a
+                            href="{% url 'fractionnement:periode_list' %}"
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 transition-all duration-200 font-semibold"
+                            aria-label="Gérer les périodes de congés"
+                        >
+                            Périodes
+                        </a>
+                        <div class="invisible group-hover:visible absolute left-1/2 -translate-x-1/2 top-full mt-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10 pointer-events-none">
+                            Consultez et gérez la liste complète de vos périodes de congés et RTT enregistrées pour l'année.
+                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Compteur au 1er janvier -->
+    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+        <div class="flex items-center gap-3">
+            <div class="bg-blue-500 text-white rounded-full p-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+            </div>
+            <div>
+                <p class="text-sm text-gray-600">Jours {{ jours_ouvres_ou_ouvrables }} depuis le 1er janvier {{ annee }}</p>
+                <p class="text-2xl font-bold text-blue-600">{{ compteur_1er_janvier }} jours</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Calendrier et formulaire -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 mb-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Calendrier {{ annee }}</h2>
+                
+                <!-- Sélecteur d'année -->
+                <div class="mb-4">
+                    <label for="annee-select" class="block text-sm font-medium text-gray-700 mb-2">
+                        Année
+                    </label>
+                    <select
+                        id="annee-select"
+                        onchange="window.location.href='?annee=' + this.value"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-custom-blue focus:border-transparent"
+                        aria-label="Sélectionner l'année"
+                    >
+                        <option value="2020" {% if annee == 2020 %}selected{% endif %}>2020</option>
+                        <option value="2021" {% if annee == 2021 %}selected{% endif %}>2021</option>
+                        <option value="2022" {% if annee == 2022 %}selected{% endif %}>2022</option>
+                        <option value="2023" {% if annee == 2023 %}selected{% endif %}>2023</option>
+                        <option value="2024" {% if annee == 2024 %}selected{% endif %}>2024</option>
+                        <option value="2025" {% if annee == 2025 %}selected{% endif %}>2025</option>
+                        <option value="2026" {% if annee == 2026 %}selected{% endif %}>2026</option>
+                        <option value="2027" {% if annee == 2027 %}selected{% endif %}>2027</option>
+                        <option value="2028" {% if annee == 2028 %}selected{% endif %}>2028</option>
+                        <option value="2029" {% if annee == 2029 %}selected{% endif %}>2029</option>
+                        <option value="2030" {% if annee == 2030 %}selected{% endif %}>2030</option>
+                    </select>
+                </div>
+
+                <!-- Calendrier Flatpickr -->
+                <div id="calendrier-container" class="mb-6"></div>
+
+                <!-- Légende -->
+                <div class="flex flex-wrap gap-4 mb-6 text-sm text-gray-600 px-2 py-1 bg-gray-50 rounded-lg inline-flex">
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 rounded bg-[#dcfce7] border border-gray-200"></div>
+                        <span>Congés</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 rounded bg-[#fee2e2] border border-gray-200"></div>
+                        <span>Jours fériés</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 rounded bg-[#f3f4f6] border border-gray-200"></div>
+                        <span>Week-ends</span>
+                    </div>
+                </div>
+
+                <!-- Formulaire d'ajout de période -->
+                <div class="border-t border-gray-200 pt-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Ajouter une période de congé</h3>
+                    
+                    <!-- Sélecteur de mode -->
+                    <div class="flex flex-wrap gap-4 mb-6">
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="radio" name="saisie_mode" value="journee" class="form-radio text-custom-blue focus:ring-custom-blue" checked>
+                            <span class="ml-2">Journée</span>
+                        </label>
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="radio" name="saisie_mode" value="matin" class="form-radio text-custom-blue focus:ring-custom-blue">
+                            <span class="ml-2">Matinée</span>
+                        </label>
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="radio" name="saisie_mode" value="apres_midi" class="form-radio text-custom-blue focus:ring-custom-blue">
+                            <span class="ml-2">Après-midi</span>
+                        </label>
+                        <label class="inline-flex items-center cursor-pointer">
+                            <input type="radio" name="saisie_mode" value="periode" class="form-radio text-custom-blue focus:ring-custom-blue">
+                            <span class="ml-2">Période</span>
+                        </label>
+                    </div>
+
+                    <form method="post" action="{% url 'fractionnement:periode_create' %}" class="space-y-4" id="form-ajout-periode">
+                        {% csrf_token %}
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Date de début (ou Date unique) -->
+                            <div>
+                                <label for="date_debut" class="block text-sm font-medium text-gray-700 mb-2" id="label-date-debut">
+                                    Date
+                                </label>
+                                <input
+                                    type="date"
+                                    id="date_debut"
+                                    name="date_debut"
+                                    required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-custom-blue focus:border-transparent"
+                                    aria-label="Date de début"
+                                />
+                                <!-- Champs cachés pour le backend -->
+                                <input type="hidden" name="debut_type" id="debut_type" value="matin">
+                            </div>
+                            
+                            <!-- Date de fin (Masqué si mode simple) -->
+                            <div id="container-date-fin" class="hidden">
+                                <label for="date_fin" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Date de fin
+                                </label>
+                                <input
+                                    type="date"
+                                    id="date_fin"
+                                    name="date_fin"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-custom-blue focus:border-transparent"
+                                    aria-label="Date de fin"
+                                />
+                                <input type="hidden" name="fin_type" id="fin_type" value="apres_midi">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Type de congé -->
+                            <div>
+                                <label for="type_conge" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Type de congé
+                                </label>
+                                <select
+                                    id="type_conge"
+                                    name="type_conge"
+                                    required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-custom-blue focus:border-transparent"
+                                    aria-label="Type de congé"
+                                >
+                                    <option value="annuel">Congés annuels</option>
+                                    <option value="rtt">RTT</option>
+                                    <option value="asa">ASA</option>
+                                    <option value="maladie">Congé maladie</option>
+                                    <option value="autre">Autre</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Bouton d'ajout -->
+                            <div class="flex items-end">
+                                <button
+                                    type="submit"
+                                    class="w-full px-6 py-2 bg-custom-blue text-white rounded-lg hover:bg-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-all duration-200 font-semibold"
+                                >
+                                    Ajouter
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panneau latéral avec résumé -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100 sticky top-24">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Résumé du calcul</h2>
+                
+                {% if cycle %}
+                <div class="mb-6">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-2">Cycle hebdomadaire</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-1">
+                                <span class="text-gray-600">Heures/semaine:</span>
+                                <div class="group relative">
+                                    <button type="button" class="text-gray-400 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue rounded-full" aria-label="Aide sur les heures par semaine">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </button>
+                                    <div class="invisible group-hover:visible absolute left-0 bottom-full mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10 pointer-events-none">
+                                        Nombre d'heures travaillées par semaine (ex: 35h, 37h, 38h, 39h). Utilisé pour calculer les RTT.
+                                        <div class="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="font-semibold">{{ cycle.heures_semaine }}h</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-1">
+                                <span class="text-gray-600">Quotité:</span>
+                                <div class="group relative">
+                                    <button type="button" class="text-gray-400 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue rounded-full" aria-label="Aide sur la quotité de travail">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </button>
+                                    <div class="invisible group-hover:visible absolute left-0 bottom-full mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10 pointer-events-none">
+                                        Quotité de travail (0.5 pour mi-temps, 1.0 pour temps complet). Utilisée pour proratiser les congés annuels et RTT.
+                                        <div class="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="font-semibold">{{ cycle.quotite_travail|floatformat:0 }}%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-1">
+                                <span class="text-gray-600">RTT annuels:</span>
+                                <div class="group relative">
+                                    <button type="button" class="text-gray-400 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue rounded-full" aria-label="Aide sur les RTT annuels">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </button>
+                                    <div class="invisible group-hover:visible absolute left-0 bottom-full mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10 pointer-events-none">
+                                        Réduction du Temps de Travail. Calculés automatiquement selon votre cycle hebdomadaire (heures supérieures à 1607h/an).
+                                        <div class="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="font-semibold">{{ cycle.rtt_annuels }} jours</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-1">
+                                <span class="text-gray-600">Congés annuels:</span>
+                                <div class="group relative">
+                                    <button type="button" class="text-gray-400 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue rounded-full" aria-label="Aide sur les congés annuels">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </button>
+                                    <div class="invisible group-hover:visible absolute left-0 bottom-full mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10 pointer-events-none">
+                                        Congés annuels de base (25 jours) proratisés selon votre quotité de travail.
+                                        <div class="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="font-semibold">{{ cycle.conges_annuels }} jours</span>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                    <p class="text-sm text-yellow-800">
+                        <a href="{% url 'fractionnement:cycle_create' %}" class="underline font-semibold">Créez un cycle hebdomadaire</a> pour l'année {{ annee }} pour calculer vos droits.
+                    </p>
+                </div>
+                {% endif %}
+
+                <div class="border-t border-gray-200 pt-6">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-2">Fractionnement</h3>
+                    <div class="space-y-2 text-sm mb-4">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-1">
+                                <span class="text-gray-600">Jours hors période:</span>
+                                <div class="group relative">
+                                    <button type="button" class="text-gray-400 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue rounded-full" aria-label="Aide sur les jours hors période">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </button>
+                                    <div class="invisible group-hover:visible absolute left-0 bottom-full mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10 pointer-events-none">
+                                        Nombre de jours de congés annuels pris hors période principale (1er novembre - 30 avril). Seuls les congés annuels comptent, pas les RTT.
+                                        <div class="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="font-semibold">{{ calcul.jours_hors_periode }} jours</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-1">
+                                <span class="text-gray-600">Jours de fractionnement:</span>
+                                <div class="group relative">
+                                    <button type="button" class="text-gray-400 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue rounded-full" aria-label="Aide sur les jours de fractionnement">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </button>
+                                    <div class="invisible group-hover:visible absolute left-0 bottom-full mb-2 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg z-10 pointer-events-none">
+                                        Jours supplémentaires accordés selon les règles spécifiées : 5, 6 ou 7 jours hors période = 1 jour, 8 jours et plus = 2 jours de fractionnement.
+                                        <div class="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="text-2xl font-bold text-custom-blue">{{ calcul.jours_fractionnement }} jour{{ calcul.jours_fractionnement|pluralize }}</span>
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-500">
+                        <p>Période principale: 1er mai - 31 octobre</p>
+                        <p>Hors période: 1er novembre - 30 avril</p>
+                    </div>
+                </div>
+
+                <!-- Liste des périodes -->
+                <div class="border-t border-gray-200 pt-6 mt-6">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-2">Périodes de congés ({{ annee }})</h3>
+                    {% if periodes %}
+                    <div class="space-y-2 max-h-64 overflow-y-auto">
+                        {% for periode in periodes %}
+                        <div class="p-2 bg-gray-50 rounded text-xs">
+                            <div class="font-semibold">{{ periode.date_debut|date:"d/m" }} - {{ periode.date_fin|date:"d/m" }}</div>
+                            <div class="text-gray-600">{{ periode.get_type_conge_display }} ({{ periode.nb_jours }} jour{{ periode.nb_jours|pluralize }})</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-sm text-gray-500">Aucune période enregistrée</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Initialiser Flatpickr pour le calendrier
+document.addEventListener('DOMContentLoaded', function() {
+    // Charger les données du calendrier via API
+    fetch('{% url "fractionnement:api_calendrier_data" annee %}')
+        .then(response => response.json())
+        .then(data => {
+            // Initialiser Flatpickr avec locale française
+            const calendar = flatpickr("#calendrier-container", {
+                inline: true,
+                mode: "range", // Mode range pour éviter la sélection multiple confuse
+                dateFormat: "Y-m-d",
+                locale: flatpickr.l10ns.fr,
+                onDayCreate: function(dObj, dStr, fp, dayElem) {
+                    const dateStr = dayElem.dateObj.toISOString().split('T')[0];
+                    const dayOfWeek = dayElem.dateObj.getDay(); // 0 = Dimanche, 6 = Samedi
+
+                    // 1. Colorer les week-ends en gris
+                    if (dayOfWeek === 0 || dayOfWeek === 6) {
+                        dayElem.style.backgroundColor = "#f3f4f6"; // gray-100
+                        dayElem.style.color = "#9ca3af"; // gray-400
+                    }
+
+                    // 2. Colorer les jours fériés en rouge
+                    const ferie = data.jours_feries.find(f => f.date === dateStr);
+                    if (ferie) {
+                        dayElem.style.backgroundColor = "#fee2e2"; // red-100
+                        dayElem.style.color = "#ef4444"; // red-500
+                        dayElem.title = ferie.nom; // Tooltip avec le nom
+                        dayElem.classList.add('cursor-help');
+                    }
+
+                    // 3. Colorer les congés en vert
+                    // Vérifier si la date est dans une période de congé
+                    const conge = data.periodes_conges.find(p => {
+                        return dateStr >= p.date_debut && dateStr <= p.date_fin;
+                    });
+
+                    if (conge) {
+                        dayElem.style.backgroundColor = "#dcfce7"; // green-100
+                        dayElem.style.color = "#16a34a"; // green-600
+                        dayElem.style.fontWeight = "bold";
+                        dayElem.title = conge.type_conge;
+                    }
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Erreur lors du chargement du calendrier:', error);
+        });
+});
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('form-ajout-periode');
+        const radios = document.getElementsByName('saisie_mode');
+        const containerDateFin = document.getElementById('container-date-fin');
+        const labelDateDebut = document.getElementById('label-date-debut');
+        const dateDebutInput = document.getElementById('date_debut');
+        const dateFinInput = document.getElementById('date_fin');
+        const debutTypeInput = document.getElementById('debut_type');
+        const finTypeInput = document.getElementById('fin_type');
+
+        function updateMode() {
+            const mode = document.querySelector('input[name="saisie_mode"]:checked').value;
+            
+            if (mode === 'periode') {
+                containerDateFin.classList.remove('hidden');
+                labelDateDebut.textContent = 'Date de début';
+                dateFinInput.required = true;
+            } else {
+                containerDateFin.classList.add('hidden');
+                labelDateDebut.textContent = 'Date';
+                dateFinInput.required = false;
+            }
+        }
+
+        // Listeners pour le changement de mode
+        radios.forEach(radio => {
+            radio.addEventListener('change', updateMode);
+        });
+
+        // Initialisation
+        updateMode();
+
+        // Gestion de la soumission
+        form.addEventListener('submit', function(e) {
+            const mode = document.querySelector('input[name="saisie_mode"]:checked').value;
+            
+            if (mode === 'periode') {
+                // Mode période : toujours journée complète par défaut
+                debutTypeInput.value = 'matin';
+                finTypeInput.value = 'apres_midi';
+            } else {
+                // Copier la date de début vers la date de fin pour les modes simples
+                dateFinInput.value = dateDebutInput.value;
+                
+                // Définir les types selon le mode
+                if (mode === 'journee') {
+                    debutTypeInput.value = 'matin';
+                    finTypeInput.value = 'apres_midi';
+                } else if (mode === 'matin') {
+                    debutTypeInput.value = 'matin';
+                    finTypeInput.value = 'matin';
+                } else if (mode === 'apres_midi') {
+                    debutTypeInput.value = 'apres_midi';
+                    finTypeInput.value = 'apres_midi';
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
+

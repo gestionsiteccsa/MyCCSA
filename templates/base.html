@@ -1,0 +1,205 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block description %}Application web métier MyCCSA{% endblock %}">
+    <meta name="author" content="MyCCSA">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}My CCSA{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Application web métier MyCCSA{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ request.build_absolute_uri }}{% static 'og-image.jpg' %}{% endblock %}">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{% block twitter_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta name="twitter:title" content="{% block twitter_title %}My CCSA{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Application web métier MyCCSA{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ request.build_absolute_uri }}{% static 'twitter-image.jpg' %}{% endblock %}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    
+    <!-- Tailwind CSS 4.1 -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer></script>
+    
+    <!-- Vue.js 3 -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js" defer></script>
+    
+    <title>{% block title %}My CCSA{% endblock %}</title>
+    
+    {% block extra_head %}{% endblock %}
+    
+    <!-- Support prefers-reduced-motion pour l'accessibilité -->
+    <style>
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+        /* Couleur personnalisée #1f4d9b */
+        .bg-custom-blue {
+            background-color: #1f4d9b;
+        }
+        .bg-custom-blue-hover:hover {
+            background-color: #1a3f82;
+        }
+        .text-custom-blue {
+            color: #1f4d9b;
+        }
+        .text-custom-blue-hover:hover {
+            color: #1a3f82;
+        }
+        .border-custom-blue {
+            border-color: #1f4d9b;
+        }
+        .focus-ring-custom-blue:focus {
+            outline: none;
+            ring: 2px;
+            ring-color: #1f4d9b;
+            ring-offset: 2px;
+        }
+        .focus\:ring-custom-blue:focus {
+            --tw-ring-color: #1f4d9b;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-gray-50">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:p-4 bg-custom-blue focus:text-white">
+        Aller au contenu principal
+    </a>
+    
+    {% block header %}
+    <header role="banner" class="bg-custom-blue shadow-lg sticky top-0 z-50">
+        <nav role="navigation" aria-label="Navigation principale" class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 md:h-20">
+                <a 
+                    href="/" 
+                    class="text-xl md:text-2xl font-bold text-white hover:text-blue-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-custom-blue rounded-lg px-2 py-1 transition-colors duration-200"
+                    aria-label="Retour à l'accueil"
+                >
+                    My CCSA
+                </a>
+                {% block navigation %}
+                <nav aria-label="Navigation utilisateur" class="flex items-center gap-3 md:gap-4">
+                    {% if user.is_authenticated %}
+                    {% if user.is_superuser %}
+                    <a 
+                        href="{% url 'dashboard:index' %}" 
+                        class="text-white hover:text-blue-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-custom-blue rounded-lg px-3 py-2 text-sm md:text-base font-medium transition-colors duration-200"
+                        aria-label="Accéder au dashboard administrateur"
+                    >
+                        <span class="hidden sm:inline">Dashboard</span>
+                        <span class="sm:hidden">Dash</span>
+                    </a>
+                    {% endif %}
+                    {% if user.is_authenticated %}
+                    <a 
+                        href="{% url 'fractionnement:index' %}" 
+                        class="text-white hover:text-blue-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-custom-blue rounded-lg px-3 py-2 text-sm md:text-base font-medium transition-colors duration-200"
+                        aria-label="Accéder aux jours de fractionnement"
+                    >
+                        <span class="hidden sm:inline">Fractionnement</span>
+                        <span class="sm:hidden">Frac</span>
+                    </a>
+                    {% if perms.events.add_event or user.is_superuser %}
+                    <a 
+                        href="{% url 'events:calendar' %}" 
+                        class="text-white hover:text-blue-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-custom-blue rounded-lg px-3 py-2 text-sm md:text-base font-medium transition-colors duration-200"
+                        aria-label="Accéder aux événements"
+                    >
+                        <span class="hidden sm:inline">Événements</span>
+                        <span class="sm:hidden">Events</span>
+                    </a>
+                    {% endif %}
+                    {% endif %}
+                    <a 
+                        href="{% url 'accounts:profile' %}" 
+                        class="text-white hover:text-blue-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-custom-blue rounded-lg px-3 py-2 text-sm md:text-base font-medium transition-colors duration-200"
+                        aria-label="Accéder à mon profil"
+                    >
+                        <span class="hidden sm:inline">Mon profil</span>
+                        <span class="sm:hidden">Profil</span>
+                    </a>
+                    <form method="post" action="{% url 'accounts:logout' %}" class="inline">
+                        {% csrf_token %}
+                        <button 
+                            type="submit" 
+                            class="bg-white text-custom-blue hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-custom-blue rounded-lg px-4 py-2 text-sm md:text-base font-medium transition-colors duration-200 shadow-sm hover:shadow-md"
+                            aria-label="Se déconnecter"
+                        >
+                            Déconnexion
+                        </button>
+                    </form>
+                    {% else %}
+                    <a 
+                        href="{% url 'accounts:login' %}" 
+                        class="text-white hover:text-blue-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-custom-blue rounded-lg px-3 py-2 text-sm md:text-base font-medium transition-colors duration-200"
+                        aria-label="Se connecter"
+                    >
+                        Connexion
+                    </a>
+                    <a 
+                        href="{% url 'accounts:register' %}" 
+                        class="bg-white text-custom-blue hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-custom-blue rounded-lg px-4 py-2 text-sm md:text-base font-medium transition-colors duration-200 shadow-sm hover:shadow-md"
+                        aria-label="Créer un compte"
+                    >
+                        Inscription
+                    </a>
+                    {% endif %}
+                </nav>
+                {% endblock %}
+            </div>
+        </nav>
+    </header>
+    {% endblock %}
+    
+    <main id="main-content" role="main" class="flex-grow container mx-auto px-4 py-8">
+        {% if messages %}
+        <div aria-live="polite" aria-atomic="true" class="mb-4">
+            {% for message in messages %}
+            <div role="alert" class="p-4 mb-2 rounded {% if message.tags == 'error' %}bg-red-100 text-red-800{% elif message.tags == 'success' %}bg-green-100 text-green-800{% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-800{% else %}bg-blue-100 text-blue-800{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </main>
+    
+    {% block footer %}
+    <footer role="contentinfo" class="bg-white border-t border-gray-100 py-10 mt-auto">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col items-center text-center space-y-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl font-bold text-custom-blue">My CCSA</span>
+                </div>
+                <p class="text-gray-500 text-sm max-w-md">
+                    Outil de gestion interne simple et performant.
+                </p>
+                <nav class="flex gap-8 text-sm font-medium text-gray-600">
+                    <a href="/" class="hover:text-custom-blue transition-colors">Accueil</a>
+                    <a href="{% url 'accounts:profile' %}" class="hover:text-custom-blue transition-colors">Mon profil</a>
+                    <a href="#" class="hover:text-custom-blue transition-colors">Mentions légales</a>
+                </nav>
+                <div class="pt-4 border-t border-gray-50 w-full max-w-xs text-xs text-gray-400">
+                    &copy; {% now "Y" %} My CCSA. Tous droits réservés.
+                </div>
+            </div>
+        </div>
+    </footer>
+    {% endblock %}
+    
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

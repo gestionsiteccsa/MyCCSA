@@ -1,0 +1,17 @@
+Bienvenue sur {{ site_name }} !
+
+Bonjour {{ user.get_full_name }},
+
+Nous sommes ravis de vous accueillir sur {{ site_name }} ! Votre compte a été créé avec succès.
+
+Vous pouvez maintenant vous connecter et commencer à utiliser tous les services disponibles.
+
+Si vous avez des questions ou besoin d'aide, n'hésitez pas à nous contacter.
+
+À bientôt !
+
+L'équipe {{ site_name }}
+
+Cet email a été envoyé automatiquement, merci de ne pas y répondre.
+
+

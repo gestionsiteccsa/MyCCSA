@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}400 - Requête invalide{% endblock %}
+{% block description %}La requête envoyée est invalide.{% endblock %}
+
+{% block content %}
+<article class="max-w-2xl mx-auto text-center py-16">
+    <header>
+        <h1 class="text-6xl font-bold text-gray-900 mb-4" aria-label="Erreur 400">
+            400
+        </h1>
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4">
+            Requête invalide
+        </h2>
+    </header>
+    
+    <section class="prose max-w-none">
+        <p class="text-lg text-gray-600 mb-8">
+            La requête envoyée est invalide ou mal formée.
+        </p>
+        
+        <nav aria-label="Navigation de retour">
+            <a 
+                href="{% url 'home' %}" 
+                class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            >
+                Retour à l'accueil
+            </a>
+        </nav>
+    </section>
+</article>
+{% endblock %}
+
+

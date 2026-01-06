@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block title %}Gestion des utilisateurs et secteurs{% endblock %}
+{% block description %}Attribuer des secteurs aux utilisateurs{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <header class="mb-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8 border border-gray-100">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                Gestion des utilisateurs et secteurs
+            </h1>
+            <p class="text-gray-600">Attribuez des secteurs d'activité aux utilisateurs</p>
+        </div>
+    </header>
+
+    <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Sidebar Navigation (Desktop) -->
+        <aside class="hidden lg:block lg:w-64 flex-shrink-0">
+            <nav aria-label="Navigation de gestion des secteurs" class="bg-white rounded-xl shadow-md border border-gray-100 p-4 sticky top-24">
+                <ul class="space-y-2">
+                    <li>
+                        {% url 'secteurs:user_list' as secteurs_user_list_url %}
+                        <a
+                            href="{{ secteurs_user_list_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg bg-custom-blue text-white focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                            aria-current="page"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            <span class="font-medium">Utilisateurs</span>
+                        </a>
+                    </li>
+                    <li>
+                        {% url 'secteurs:list' as secteurs_list_url %}
+                        {% if secteurs_list_url %}
+                        <a
+                            href="{{ secteurs_list_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                            <span class="font-medium">Liste des secteurs</span>
+                        </a>
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% url 'secteurs:create' as secteurs_create_url %}
+                        {% if secteurs_create_url %}
+                        <a
+                            href="{{ secteurs_create_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            <span class="font-medium">Créer un secteur</span>
+                        </a>
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% url 'dashboard:index' as dashboard_url %}
+                        {% if dashboard_url %}
+                        <a
+                            href="{{ dashboard_url }}"
+                            class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                            </svg>
+                            <span class="font-medium">Dashboard</span>
+                        </a>
+                        {% endif %}
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Onglets Navigation (Mobile/Tablet) -->
+        <div class="lg:hidden mb-6">
+            <nav aria-label="Navigation de gestion des secteurs" class="bg-white rounded-xl shadow-md border border-gray-100 p-2">
+                <div class="flex overflow-x-auto scrollbar-hide">
+                    {% url 'secteurs:user_list' as secteurs_user_list_url %}
+                    <a
+                        href="{{ secteurs_user_list_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium bg-custom-blue text-white"
+                    >
+                        Utilisateurs
+                    </a>
+                    {% url 'secteurs:list' as secteurs_list_url %}
+                    {% if secteurs_list_url %}
+                    <a
+                        href="{{ secteurs_list_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    >
+                        Liste des secteurs
+                    </a>
+                    {% endif %}
+                    {% url 'secteurs:create' as secteurs_create_url %}
+                    {% if secteurs_create_url %}
+                    <a
+                        href="{{ secteurs_create_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    >
+                        Créer un secteur
+                    </a>
+                    {% endif %}
+                    {% url 'dashboard:index' as dashboard_url %}
+                    {% if dashboard_url %}
+                    <a
+                        href="{{ dashboard_url }}"
+                        class="flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-custom-blue focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    >
+                        Dashboard
+                    </a>
+                    {% endif %}
+                </div>
+            </nav>
+        </div>
+
+        <!-- Contenu principal -->
+        <main class="flex-1">
+            <!-- Liste des utilisateurs -->
+            <section class="bg-white shadow-md rounded-xl p-6 md:p-8 border border-gray-100">
+        <h2 class="text-xl md:text-2xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+            <svg class="w-6 h-6 text-custom-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+            Liste des utilisateurs
+        </h2>
+
+        {% if page_obj %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Utilisateur
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Email
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Secteurs
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Actions
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for user in page_obj %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <div class="h-10 w-10 rounded-full bg-custom-blue flex items-center justify-center text-white font-bold">
+                                        {% if user.first_name and user.last_name %}
+                                            {{ user.first_name|first }}{{ user.last_name|first }}
+                                        {% elif user.first_name %}
+                                            {{ user.first_name|first }}
+                                        {% elif user.last_name %}
+                                            {{ user.last_name|first }}
+                                        {% else %}
+                                            {{ user.email|first|upper }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        {{ user.get_full_name|default:user.email }}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-600">{{ user.email }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex flex-wrap gap-2">
+                                {% for secteur in user.secteurs.all %}
+                                <span
+                                    class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium text-white"
+                                    style="background-color: {{ secteur.couleur }};"
+                                >
+                                    {{ secteur.nom }}
+                                </span>
+                                {% empty %}
+                                <span class="text-sm text-gray-400 italic">Aucun secteur</span>
+                                {% endfor %}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <a
+                                href="{% url 'secteurs:user_secteurs' user.id %}"
+                                class="text-custom-blue hover:text-custom-blue-hover focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 rounded-lg px-3 py-1 transition-colors duration-200"
+                                aria-label="Gérer les secteurs de {{ user.get_full_name|default:user.email }}"
+                            >
+                                Gérer
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <nav aria-label="Pagination des utilisateurs" class="mt-8 flex justify-center">
+            <div class="flex gap-2">
+                {% if page_obj.has_previous %}
+                <a
+                    href="?page={{ page_obj.previous_page_number }}"
+                    class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    aria-label="Page précédente"
+                >
+                    Précédent
+                </a>
+                {% endif %}
+                
+                <span class="px-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-700">
+                    Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+                </span>
+                
+                {% if page_obj.has_next %}
+                <a
+                    href="?page={{ page_obj.next_page_number }}"
+                    class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-custom-blue focus:ring-offset-2 transition-colors duration-200"
+                    aria-label="Page suivante"
+                >
+                    Suivant
+                </a>
+                {% endif %}
+            </div>
+        </nav>
+        {% endif %}
+        {% else %}
+        <div class="text-center py-12">
+            <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+            <p class="text-gray-600">Aucun utilisateur trouvé.</p>
+        </div>
+        {% endif %}
+    </section>
+        </main>
+    </div>
+</div>
+
+{% block extra_scripts %}
+<style>
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+</style>
+{% endblock %}
+{% endblock %}
+
