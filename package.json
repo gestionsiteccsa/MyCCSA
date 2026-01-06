@@ -1,0 +1,16 @@
+{
+  "name": "myccsa",
+  "version": "1.0.0",
+  "description": "Application web métier Django avec Tailwind CSS",
+  "scripts": {
+    "build": "tailwindcss -i ./src/css/input.css -o ./static/css/output.css --minify",
+    "watch": "tailwindcss -i ./src/css/input.css -o ./static/css/output.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+

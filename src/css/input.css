@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+/* Couleur personnalisée #1f4d9b */
+@theme {
+  --color-custom-blue: #1f4d9b;
+  --color-custom-blue-hover: #1a3f82;
+}
+
+/* Classes utilitaires personnalisées */
+.bg-custom-blue {
+  background-color: #1f4d9b;
+}
+
+.bg-custom-blue-hover:hover {
+  background-color: #1a3f82;
+}
+
+.text-custom-blue {
+  color: #1f4d9b;
+}
+
+.text-custom-blue-hover:hover {
+  color: #1a3f82;
+}
+
+.border-custom-blue {
+  border-color: #1f4d9b;
+}
+
+.focus-ring-custom-blue:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: #1f4d9b;
+  ring-offset: 2px;
+}
+
+.focus\:ring-custom-blue:focus {
+  --tw-ring-color: #1f4d9b;
+}
+

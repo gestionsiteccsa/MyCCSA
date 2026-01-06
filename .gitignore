@@ -76,6 +76,10 @@ logs/
 # Cache
 .cache/
 
+# Node.js
+node_modules/
+package-lock.json
+
 # o2switch spécifique
 *.bak
 *.backup

@@ -26,8 +26,8 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
     
-    <!-- Tailwind CSS 4.1 -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer></script>
+    <!-- Tailwind CSS 4.1 (production) -->
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
     
     <!-- Vue.js 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js" defer></script>
@@ -47,31 +47,6 @@
                 transition-duration: 0.01ms !important;
                 scroll-behavior: auto !important;
             }
-        }
-        /* Couleur personnalisée #1f4d9b */
-        .bg-custom-blue {
-            background-color: #1f4d9b;
-        }
-        .bg-custom-blue-hover:hover {
-            background-color: #1a3f82;
-        }
-        .text-custom-blue {
-            color: #1f4d9b;
-        }
-        .text-custom-blue-hover:hover {
-            color: #1a3f82;
-        }
-        .border-custom-blue {
-            border-color: #1f4d9b;
-        }
-        .focus-ring-custom-blue:focus {
-            outline: none;
-            ring: 2px;
-            ring-color: #1f4d9b;
-            ring-offset: 2px;
-        }
-        .focus\:ring-custom-blue:focus {
-            --tw-ring-color: #1f4d9b;
         }
     </style>
 </head>
