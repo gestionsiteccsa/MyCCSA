@@ -46,11 +46,15 @@ pip install -r requirements.txt
 
 ### 4. Installer les dépendances Node.js (Tailwind CSS)
 
+**Description** : Installe Tailwind CSS CLI et ses dépendances dans `node_modules/`. À faire une seule fois après le clonage du projet.
+
 ```bash
 npm install
 ```
 
 ### 5. Créer le dossier logs
+
+**Description** : Crée le dossier pour les fichiers de logs Django.
 
 ```bash
 # Windows
@@ -61,6 +65,8 @@ mkdir -p logs
 ```
 
 ### 6. Configuration de l'environnement
+
+**Description** : Configure les variables d'environnement nécessaires au projet.
 
 Copier le fichier `.env.example` vers `.env` et modifier les valeurs :
 
@@ -74,35 +80,41 @@ cp .env.example .env
 - `ALLOWED_HOSTS` : Domaines autorisés (séparés par des virgules)
 - Configuration PostgreSQL si nécessaire
 
-### 7. Build Tailwind CSS
+### 7. Migrations de la base de données
 
-```bash
-# Build de production (minifié)
-npm run build
-
-# Ou en mode watch pour le développement
-npm run watch
-```
-
-### 8. Migrations de la base de données
+**Description** : Applique les migrations de la base de données pour créer les tables nécessaires.
 
 ```bash
 python manage.py migrate
 ```
 
-### 9. Créer un superutilisateur
+### 8. Créer un superutilisateur
+
+**Description** : Crée un compte administrateur pour accéder à l'interface d'administration Django.
 
 ```bash
 python manage.py createsuperuser
 ```
 
-### 10. Créer la table de cache
+### 9. Créer la table de cache
+
+**Description** : Crée la table de cache en base de données (nécessaire pour le cache Django sur o2switch).
 
 ```bash
 python manage.py createcachetable
 ```
 
+### 10. Build Tailwind CSS (production)
+
+**Description** : Compile et minifie le CSS Tailwind pour la production. Génère `static/css/output.css` qui sera commité dans Git.
+
+```bash
+npm run build
+```
+
 ### 11. Collecter les fichiers statiques (production)
+
+**Description** : Collecte tous les fichiers statiques (CSS, JS, images) dans le dossier `staticfiles/` pour la production.
 
 ```bash
 python manage.py collectstatic --noinput
@@ -110,11 +122,41 @@ python manage.py collectstatic --noinput
 
 ### 12. Lancer le serveur de développement
 
+**Description** : Démarre le serveur de développement Django.
+
 ```bash
 python manage.py runserver
 ```
 
 Le site sera accessible sur `http://127.0.0.1:8000/`
+
+## 🔄 Workflow de développement
+
+### Mode développement (watch automatique)
+
+**Description** : Lance Tailwind CSS en mode watch. Le CSS sera recompilé automatiquement à chaque modification de vos templates HTML. Laissez cette commande tourner pendant le développement.
+
+```bash
+npm run watch
+```
+
+**Note** : Ouvrez un terminal séparé pour cette commande et laissez-le ouvert pendant que vous développez.
+
+### Build avant commit
+
+**Description** : Avant de commiter vos modifications, arrêtez le mode watch (Ctrl+C) et lancez cette commande pour générer le CSS de production minifié.
+
+```bash
+npm run build
+```
+
+Ensuite, commitez le fichier `static/css/output.css` :
+
+```bash
+git add static/css/output.css
+git commit -m "Mise à jour CSS Tailwind"
+git push
+```
 
 ## 📁 Structure du projet
 
@@ -180,15 +222,53 @@ flake8 .
 
 ## 🚀 Déploiement sur o2switch
 
-1. Configurer les variables d'environnement sur le serveur
-2. Configurer PostgreSQL sur o2switch
-3. Installer les dépendances Node.js : `npm install`
-4. Build Tailwind CSS : `npm run build`
-5. Exécuter les migrations : `python manage.py migrate`
-6. Créer la table de cache : `python manage.py createcachetable`
-7. Créer le dossier logs : `mkdir logs` (si nécessaire)
-8. Collecter les fichiers statiques : `python manage.py collectstatic --noinput`
-9. Configurer le serveur web pour servir `/media/` et `/static/`
+**Important** : Le CSS Tailwind est compilé en local et commité dans Git. Pas besoin de Node.js/npm sur le serveur !
+
+### Commandes à exécuter sur le serveur o2switch
+
+1. **Configurer les variables d'environnement**
+   - Description : Configurer les variables d'environnement sur le serveur (SECRET_KEY, DEBUG, ALLOWED_HOSTS, etc.)
+   - Action : Créer/modifier le fichier `.env` sur le serveur
+
+2. **Configurer PostgreSQL**
+   - Description : Configurer la connexion à la base de données PostgreSQL sur o2switch
+   - Action : Configurer les variables DB_NAME, DB_USER, DB_PASSWORD dans `.env`
+
+3. **Récupérer le code**
+   - Description : Récupérer le code depuis Git (inclut le CSS compilé)
+   ```bash
+   git pull
+   ```
+
+4. **Exécuter les migrations**
+   - Description : Appliquer les migrations de la base de données
+   ```bash
+   python manage.py migrate
+   ```
+
+5. **Créer la table de cache**
+   - Description : Créer la table de cache en base de données (nécessaire pour le cache Django)
+   ```bash
+   python manage.py createcachetable
+   ```
+
+6. **Créer le dossier logs**
+   - Description : Créer le dossier pour les fichiers de logs (si nécessaire)
+   ```bash
+   mkdir -p logs
+   ```
+
+7. **Collecter les fichiers statiques**
+   - Description : Collecte tous les fichiers statiques (inclut le CSS Tailwind déjà compilé) dans `staticfiles/` pour la production
+   ```bash
+   python manage.py collectstatic --noinput
+   ```
+
+8. **Configurer le serveur web**
+   - Description : Configurer le serveur web (Apache/Nginx) pour servir `/media/` et `/static/`
+   - Action : Configuration serveur web (généralement déjà fait par o2switch)
+
+**Note** : Le fichier `static/css/output.css` est déjà compilé et présent dans le code Git. Pas besoin de `npm install` ni `npm run build` sur le serveur !
 
 ## 📚 Documentation
 

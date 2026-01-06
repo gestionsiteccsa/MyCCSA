@@ -29,7 +29,10 @@ db.sqlite3
 db.sqlite3-journal
 /media
 /staticfiles
-/static
+# Ne pas ignorer static/css/output.css (CSS compilé à commiter)
+/static/*
+!/static/css/
+!/static/css/output.css
 
 # Environnement virtuel
 env/
