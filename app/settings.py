@@ -148,6 +148,11 @@ USE_TZ = True
 STATIC_URL = config('STATIC_URL', default='/static/')
 STATIC_ROOT = BASE_DIR / config('STATIC_ROOT', default='staticfiles')
 
+# Dossiers où Django cherche les fichiers statiques avant collectstatic
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+
 # Media files
 MEDIA_URL = config('MEDIA_URL', default='/media/')
 MEDIA_ROOT = BASE_DIR / config('MEDIA_ROOT', default='media')
