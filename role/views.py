@@ -48,7 +48,7 @@ def role_list_view(request):
     roles = Role.objects.annotate(
         user_count=Count('utilisateurs')
     ).only('nom', 'niveau', 'created_at').order_by('niveau', 'nom')
-    
+
     # Pagination
     paginator = Paginator(roles, 25)
     page_number = request.GET.get('page')
@@ -222,33 +222,33 @@ def user_role_view(request, user_id):
 def check_level_available(request):
     """
     Vue API pour vérifier si un niveau est disponible.
-    
+
     Args:
         request: Objet HttpRequest avec paramètre 'niveau' et optionnel 'exclude_pk'
-    
+
     Returns:
         JsonResponse: {'available': bool, 'existing_role': str ou None}
     """
     niveau = request.GET.get('niveau')
     exclude_pk = request.GET.get('exclude_pk')
-    
+
     if not niveau:
         return JsonResponse({'error': 'Niveau manquant'}, status=400)
-    
+
     try:
         niveau = int(niveau)
     except ValueError:
         return JsonResponse({'error': 'Niveau invalide'}, status=400)
-    
+
     qs = Role.objects.filter(niveau=niveau)
     if exclude_pk:
         try:
             qs = qs.exclude(pk=int(exclude_pk))
         except ValueError:
             pass
-    
+
     existing_role = qs.first()
-    
+
     return JsonResponse({
         'available': existing_role is None,
         'existing_role': existing_role.nom if existing_role else None
@@ -268,7 +268,7 @@ def user_list_view(request):
         HttpResponse: Réponse HTTP avec la liste des utilisateurs
     """
     users = User.objects.select_related('role').all().order_by('-date_joined')
-    
+
     # Pagination
     paginator = Paginator(users, 25)
     page_number = request.GET.get('page')
@@ -279,4 +279,3 @@ def user_list_view(request):
         'users': page_obj,
     }
     return render(request, 'role/user_list.html', context)
-

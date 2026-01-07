@@ -141,7 +141,7 @@ class UserProfileEditFormTest(TestCase):
 
     def test_duplicate_email(self):
         """Test email déjà utilisé par un autre utilisateur."""
-        other_user = User.objects.create_user(
+        User.objects.create_user(
             email='other@example.com',
             password='testpass123'
         )
@@ -225,4 +225,3 @@ class NotificationSettingsFormTest(TestCase):
         self.user.refresh_from_db()
         self.assertFalse(self.user.notify_welcome_email)
         self.assertTrue(self.user.notify_password_change)
-

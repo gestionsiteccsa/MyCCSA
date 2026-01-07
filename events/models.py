@@ -271,7 +271,6 @@ class Event(models.Model):
             return 'border-red-500'
         return 'border-gray-200'
 
-
     class Meta:
         verbose_name = _('événement')
         verbose_name_plural = _('événements')
@@ -293,13 +292,13 @@ class Event(models.Model):
 
         Raises:
             ValidationError: Si les données sont invalides
-            
+
         Example:
             >>> event = Event(titre='Test', date_debut=now, date_fin=now - timedelta(days=1))
             >>> event.clean()  # Raises ValidationError
         """
         super().clean()
-        
+
         # Vérifier que date_fin >= date_debut si date_fin est renseignée
         if self.date_fin and self.date_debut and self.date_fin < self.date_debut:
             raise ValidationError({
@@ -309,14 +308,14 @@ class Event(models.Model):
     def save(self, *args: Any, **kwargs: Any) -> None:
         """
         Sauvegarde l'événement et calcule la couleur du calendrier.
-        
+
         Calcule automatiquement la couleur du calendrier en fonction des secteurs
         associés après la sauvegarde initiale.
 
         Args:
             *args: Arguments positionnels passés à Model.save()
             **kwargs: Arguments nommés passés à Model.save()
-            
+
         Example:
             >>> event = Event.objects.create(titre='Test', date_debut=now, createur=user)
             >>> event.secteurs.add(secteur1)
@@ -324,11 +323,11 @@ class Event(models.Model):
         """
         self.full_clean()  # Appeler la validation
         super().save(*args, **kwargs)
-        
+
         # Calculer la couleur du calendrier basée sur les secteurs APRÈS la sauvegarde
         # (pour pouvoir accéder à la relation ManyToMany qui nécessite un id)
         self.couleur_calendrier = self._calculate_calendar_color()
-        
+
         # Sauvegarder à nouveau pour enregistrer la couleur calculée
         if self.couleur_calendrier:
             super().save(update_fields=['couleur_calendrier'])
@@ -336,13 +335,13 @@ class Event(models.Model):
     def _calculate_calendar_color(self) -> str:
         """
         Calcule la couleur du calendrier en fonction des secteurs.
-        
+
         Optimisé pour éviter les requêtes multiples : charge les secteurs une seule fois
         et travaille en mémoire.
 
         Returns:
             str: Code couleur hexadécimal
-            
+
         Example:
             >>> event = Event.objects.create(...)
             >>> event.secteurs.add(secteur1, secteur2)
@@ -353,26 +352,26 @@ class Event(models.Model):
         if not self.pk:
             # Couleur par défaut si l'événement n'est pas encore sauvegardé
             return '#808080'  # Gris
-        
+
         # Charger les secteurs une seule fois et convertir en liste pour travailler en mémoire
         # Cela évite les requêtes multiples (exists(), count(), first())
         secteurs_list = list(self.secteurs.all())
-        
+
         if not secteurs_list:
             # Couleur par défaut si aucun secteur
             return '#808080'  # Gris
-        
+
         if len(secteurs_list) == 1:
             # Un seul secteur : utiliser sa couleur
             return secteurs_list[0].couleur
-        
+
         # Plusieurs secteurs : calculer la couleur moyenne/mixte
         return self._mix_colors([s.couleur for s in secteurs_list])
 
     def _mix_colors(self, colors: List[str]) -> str:
         """
         Mélange plusieurs couleurs hexadécimales pour obtenir une couleur moyenne.
-        
+
         Calcule la moyenne arithmétique des composantes RGB de chaque couleur.
 
         Args:
@@ -380,7 +379,7 @@ class Event(models.Model):
 
         Returns:
             str: Code couleur hexadécimal mélangé
-            
+
         Example:
             >>> event = Event()
             >>> mixed = event._mix_colors(['#FF0000', '#00FF00'])
@@ -388,7 +387,7 @@ class Event(models.Model):
         """
         if not colors:
             return '#808080'
-        
+
         # Convertir les couleurs hex en RGB
         rgb_values = []
         for color in colors:
@@ -398,15 +397,15 @@ class Event(models.Model):
                 g = int(color[2:4], 16)
                 b = int(color[4:6], 16)
                 rgb_values.append((r, g, b))
-        
+
         if not rgb_values:
             return '#808080'
-        
+
         # Calculer la moyenne de chaque composante RGB
         avg_r = sum(r for r, g, b in rgb_values) // len(rgb_values)
         avg_g = sum(g for r, g, b in rgb_values) // len(rgb_values)
         avg_b = sum(b for r, g, b in rgb_values) // len(rgb_values)
-        
+
         # Convertir en hex
         return f"#{avg_r:02x}{avg_g:02x}{avg_b:02x}".upper()
 

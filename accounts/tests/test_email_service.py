@@ -168,4 +168,3 @@ class EmailServiceTest(TestCase):
         )
 
         self.assertFalse(result)
-

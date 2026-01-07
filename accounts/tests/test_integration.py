@@ -199,4 +199,3 @@ class ProfileEditWorkflowTest(TestCase):
         self.assertContains(response, 'newemail@example.com')
         self.assertContains(response, 'New')
         self.assertContains(response, 'Name')
-

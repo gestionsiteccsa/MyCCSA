@@ -9,6 +9,7 @@ from ..models import CycleHebdomadaire, PeriodeConge
 
 User = get_user_model()
 
+
 class FractionnementAPITest(TestCase):
     """
     Tests pour les vues API JSON.
@@ -23,7 +24,7 @@ class FractionnementAPITest(TestCase):
             email_verified=True
         )
         self.client.login(email='api_test@example.com', password='testpass123')
-        
+
         # Créer des données de test
         self.annee = 2024
         CycleHebdomadaire.objects.create(
@@ -44,10 +45,10 @@ class FractionnementAPITest(TestCase):
             annee_civile=2024,
             nb_jours=5
         )
-        
+
         url = reverse('fractionnement:api_calendrier_data', args=[self.annee])
         response = self.client.get(url)
-        
+
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data['annee'], self.annee)
@@ -65,7 +66,7 @@ class FractionnementAPITest(TestCase):
         """Test que l'API calcul retourne des données valides."""
         url = reverse('fractionnement:api_calcul_fractionnement', args=[self.annee])
         response = self.client.get(url)
-        
+
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIn('jours_hors_periode', data)
@@ -86,6 +87,6 @@ class FractionnementAPITest(TestCase):
         CycleHebdomadaire.objects.all().delete()
         url = reverse('fractionnement:api_calcul_fractionnement', args=[self.annee])
         response = self.client.get(url)
-        
+
         # Le service actuel semble gérer l'absence de cycle en retournant 0 ou une erreur 400
         self.assertIn(response.status_code, [200, 400])

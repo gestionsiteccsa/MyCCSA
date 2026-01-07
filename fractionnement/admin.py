@@ -17,7 +17,7 @@ class CycleHebdomadaireAdmin(admin.ModelAdmin):
     search_fields = ['user__email', 'user__first_name', 'user__last_name', 'annee']
     readonly_fields = ['rtt_annuels', 'conges_annuels', 'created_at', 'updated_at']
     ordering = ['-annee', 'user']
-    
+
     fieldsets = (
         (_('Informations générales'), {
             'fields': ('user', 'annee')
@@ -47,7 +47,7 @@ class PeriodeCongeAdmin(admin.ModelAdmin):
     readonly_fields = ['annee_civile', 'nb_jours', 'created_at', 'updated_at']
     ordering = ['-date_debut', 'user']
     date_hierarchy = 'date_debut'
-    
+
     fieldsets = (
         (_('Informations générales'), {
             'fields': ('user', 'type_conge')
@@ -76,7 +76,7 @@ class ParametresAnneeAdmin(admin.ModelAdmin):
     search_fields = ['user__email', 'user__first_name', 'user__last_name', 'annee']
     readonly_fields = ['created_at', 'updated_at']
     ordering = ['-annee', 'user']
-    
+
     fieldsets = (
         (_('Informations générales'), {
             'fields': ('user', 'annee', 'jours_ouvres_ou_ouvrables')
@@ -98,7 +98,7 @@ class CalculFractionnementAdmin(admin.ModelAdmin):
     search_fields = ['user__email', 'user__first_name', 'user__last_name', 'annee']
     readonly_fields = ['jours_hors_periode', 'jours_fractionnement', 'date_calcul']
     ordering = ['-annee', 'user']
-    
+
     fieldsets = (
         (_('Informations générales'), {
             'fields': ('user', 'annee')

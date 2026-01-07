@@ -83,7 +83,3 @@ def get_dashboard_stats():
         'latest_secteurs': latest_secteurs,
         'latest_roles': latest_roles,
     }
-
-
-
-

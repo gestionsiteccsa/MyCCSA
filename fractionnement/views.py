@@ -43,7 +43,7 @@ def cycle_create_view(request: HttpRequest) -> HttpResponse:
             return redirect('fractionnement:cycle_list')
     else:
         form = CycleHebdomadaireForm(user=request.user)
-    
+
     context = {
         'form': form,
         'title': _('Créer un cycle hebdomadaire'),
@@ -60,12 +60,12 @@ def cycle_list_view(request: HttpRequest) -> HttpResponse:
     cycles = CycleHebdomadaire.objects.filter(
         user=request.user
     ).select_related('user').order_by('-annee')
-    
+
     # Pagination
     paginator = Paginator(cycles, PAGINATION_PAR_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
     context = {
         'page_obj': page_obj,
         'cycles': page_obj,
@@ -84,7 +84,7 @@ def cycle_update_view(request: HttpRequest, pk: int) -> HttpResponse:
         pk=pk,
         user=request.user
     )
-    
+
     if request.method == 'POST':
         form = CycleHebdomadaireForm(request.POST, instance=cycle, user=request.user)
         if form.is_valid():
@@ -95,7 +95,7 @@ def cycle_update_view(request: HttpRequest, pk: int) -> HttpResponse:
             return redirect('fractionnement:cycle_list')
     else:
         form = CycleHebdomadaireForm(instance=cycle, user=request.user)
-    
+
     context = {
         'form': form,
         'cycle': cycle,
@@ -115,7 +115,7 @@ def cycle_delete_view(request: HttpRequest, pk: int) -> HttpResponse:
         pk=pk,
         user=request.user
     )
-    
+
     if request.method == 'POST':
         annee = cycle.annee
         cycle.delete()
@@ -123,7 +123,7 @@ def cycle_delete_view(request: HttpRequest, pk: int) -> HttpResponse:
         cache.delete(f'calcul_fractionnement_{request.user.id}_{annee}')
         messages.success(request, _('Cycle hebdomadaire supprimé avec succès.'))
         return redirect('fractionnement:cycle_list')
-    
+
     context = {
         'cycle': cycle,
     }
@@ -147,7 +147,7 @@ def periode_create_view(request: HttpRequest) -> HttpResponse:
             return redirect('fractionnement:periode_list')
     else:
         form = PeriodeCongeForm(user=request.user)
-    
+
     context = {
         'form': form,
         'title': _('Créer une période de congé'),
@@ -164,7 +164,7 @@ def periode_list_view(request: HttpRequest) -> HttpResponse:
     periodes = PeriodeConge.objects.filter(
         user=request.user
     ).select_related('user').order_by('-date_debut')
-    
+
     # Filtres
     annee = request.GET.get('annee')
     if annee:
@@ -172,16 +172,16 @@ def periode_list_view(request: HttpRequest) -> HttpResponse:
             periodes = periodes.filter(annee_civile=int(annee))
         except ValueError:
             pass
-    
+
     type_conge = request.GET.get('type_conge')
     if type_conge:
         periodes = periodes.filter(type_conge=type_conge)
-    
+
     # Pagination
     paginator = Paginator(periodes, PAGINATION_PAR_PAGE)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
     context = {
         'page_obj': page_obj,
         'periodes': page_obj,
@@ -200,7 +200,7 @@ def periode_update_view(request: HttpRequest, pk: int) -> HttpResponse:
         pk=pk,
         user=request.user
     )
-    
+
     if request.method == 'POST':
         form = PeriodeCongeForm(request.POST, instance=periode, user=request.user)
         if form.is_valid():
@@ -212,7 +212,7 @@ def periode_update_view(request: HttpRequest, pk: int) -> HttpResponse:
             return redirect('fractionnement:periode_list')
     else:
         form = PeriodeCongeForm(instance=periode, user=request.user)
-    
+
     context = {
         'form': form,
         'periode': periode,
@@ -232,7 +232,7 @@ def periode_delete_view(request: HttpRequest, pk: int) -> HttpResponse:
         pk=pk,
         user=request.user
     )
-    
+
     if request.method == 'POST':
         annee = periode.annee_civile
         periode.delete()
@@ -241,7 +241,7 @@ def periode_delete_view(request: HttpRequest, pk: int) -> HttpResponse:
         cache.delete(f'calendrier_data_{request.user.id}_{annee}')
         messages.success(request, _('Période de congé supprimée avec succès.'))
         return redirect('fractionnement:periode_list')
-    
+
     context = {
         'periode': periode,
     }
@@ -263,7 +263,7 @@ def fractionnement_view(request):
             annee = date.today().year
     else:
         annee = date.today().year
-    
+
     # Récupérer le cycle hebdomadaire pour l'année
     try:
         cycle = CycleHebdomadaire.objects.select_related('user').only(
@@ -276,7 +276,7 @@ def fractionnement_view(request):
         )
     except CycleHebdomadaire.DoesNotExist:
         cycle = None
-    
+
     # Récupérer les paramètres de l'année
     try:
         parametres = ParametresAnnee.objects.select_related('user').only(
@@ -287,7 +287,7 @@ def fractionnement_view(request):
         )
     except ParametresAnnee.DoesNotExist:
         parametres = None
-    
+
     # Calculer le fractionnement
     try:
         calcul = calculer_fractionnement_complet(request.user, annee)
@@ -298,16 +298,16 @@ def fractionnement_view(request):
             'jours_fractionnement': 0,
             'annee': annee,
         }
-    
+
     # Récupérer les périodes de congés pour l'année
     periodes = PeriodeConge.objects.filter(
         user=request.user,
         annee_civile=annee
     ).select_related('user').only(
-        'id', 'date_debut', 'date_fin', 'type_conge', 
+        'id', 'date_debut', 'date_fin', 'type_conge',
         'nb_jours', 'annee_civile', 'user__email'
     ).order_by('date_debut')
-    
+
     # Compteur au 1er janvier
     date_1er_janvier = date(annee, 1, 1)
     jours_ouvres_ou_ouvrables = 'ouvres'
@@ -315,7 +315,7 @@ def fractionnement_view(request):
         jours_ouvres_ou_ouvrables = parametres.jours_ouvres_ou_ouvrables
     elif cycle:
         jours_ouvres_ou_ouvrables = cycle.jours_ouvres_ou_ouvrables
-    
+
     from .utils import compter_jours_ouvres, compter_jours_ouvrables
     if jours_ouvres_ou_ouvrables == 'ouvrables':
         compteur_1er_janvier = compter_jours_ouvrables(
@@ -331,7 +331,7 @@ def fractionnement_view(request):
             exclure_feries=True,
             annee=annee
         )
-    
+
     context = {
         'annee': annee,
         'cycle': cycle,
@@ -349,24 +349,24 @@ def fractionnement_view(request):
 def api_calendrier_data(request: HttpRequest, annee: str) -> JsonResponse:
     """
     API JSON pour récupérer les données du calendrier.
-    
+
     Utilise le cache pour optimiser les performances.
     """
     from django.core.cache import cache
-    
+
     try:
         annee_int = int(annee)
     except ValueError:
         return JsonResponse({'error': 'Année invalide'}, status=400)
-    
+
     # Cache par utilisateur et année (15 minutes)
     cache_key = f'calendrier_data_{request.user.id}_{annee_int}'
     data = cache.get(cache_key)
-    
+
     if data is None:
         data = get_calendrier_data(request.user, annee_int)
         cache.set(cache_key, data, 60 * 15)  # 15 minutes
-    
+
     return JsonResponse(data)
 
 
@@ -375,20 +375,20 @@ def api_calendrier_data(request: HttpRequest, annee: str) -> JsonResponse:
 def api_calcul_fractionnement(request: HttpRequest, annee: str) -> JsonResponse:
     """
     API JSON pour calculer le fractionnement en temps réel.
-    
+
     Utilise le cache pour optimiser les performances.
     """
     from django.core.cache import cache
-    
+
     try:
         annee_int = int(annee)
     except ValueError:
         return JsonResponse({'error': 'Année invalide'}, status=400)
-    
+
     # Cache par utilisateur et année (5 minutes car peut changer avec les périodes)
     cache_key = f'calcul_fractionnement_{request.user.id}_{annee_int}'
     calcul = cache.get(cache_key)
-    
+
     if calcul is None:
         try:
             calcul = calculer_fractionnement_complet(request.user, annee_int)
@@ -402,5 +402,5 @@ def api_calcul_fractionnement(request: HttpRequest, annee: str) -> JsonResponse:
                 exc_info=True
             )
             return JsonResponse({'error': 'Une erreur est survenue lors du calcul'}, status=500)
-    
+
     return JsonResponse(calcul)

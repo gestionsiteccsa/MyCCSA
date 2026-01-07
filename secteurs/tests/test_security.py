@@ -29,21 +29,21 @@ class CSRFProtectionTest(TestCase):
     def test_csrf_protection_create(self):
         """Test que la création nécessite un token CSRF."""
         self.client.login(email='admin@example.com', password='adminpass123')
-        
+
         # Tentative de POST sans CSRF token
         response = self.client.post(reverse('secteurs:create'), {
             'nom': 'NOUVEAU',
             'couleur': '#ff0000',
             'ordre': 1
         }, follow=False)
-        
+
         # Django devrait rejeter la requête (403 ou redirect)
         self.assertIn(response.status_code, [403, 400])
 
     def test_csrf_protection_update(self):
         """Test que la modification nécessite un token CSRF."""
         self.client.login(email='admin@example.com', password='adminpass123')
-        
+
         # Tentative de POST sans CSRF token
         response = self.client.post(
             reverse('secteurs:update', args=[self.secteur.pk]),
@@ -54,20 +54,20 @@ class CSRFProtectionTest(TestCase):
             },
             follow=False
         )
-        
+
         # Django devrait rejeter la requête
         self.assertIn(response.status_code, [403, 400])
 
     def test_csrf_protection_delete(self):
         """Test que la suppression nécessite un token CSRF."""
         self.client.login(email='admin@example.com', password='adminpass123')
-        
+
         # Tentative de POST sans CSRF token
         response = self.client.post(
             reverse('secteurs:delete', args=[self.secteur.pk]),
             follow=False
         )
-        
+
         # Django devrait rejeter la requête
         self.assertIn(response.status_code, [403, 400])
 
@@ -99,19 +99,19 @@ class PermissionsTest(TestCase):
         response = self.client.get(reverse('secteurs:list'))
         self.assertEqual(response.status_code, 302)
         self.assertIn('/login', response.url)
-        
+
         # Création
         response = self.client.get(reverse('secteurs:create'))
         self.assertEqual(response.status_code, 302)
-        
+
         # Modification
         response = self.client.get(reverse('secteurs:update', args=[self.secteur.pk]))
         self.assertEqual(response.status_code, 302)
-        
+
         # Suppression
         response = self.client.get(reverse('secteurs:delete', args=[self.secteur.pk]))
         self.assertEqual(response.status_code, 302)
-        
+
         # Liste utilisateurs
         response = self.client.get(reverse('secteurs:user_list'))
         self.assertEqual(response.status_code, 302)
@@ -119,23 +119,23 @@ class PermissionsTest(TestCase):
     def test_normal_user_forbidden(self):
         """Test que les utilisateurs normaux reçoivent 403."""
         self.client.login(email='user@example.com', password='userpass123')
-        
+
         # Liste
         response = self.client.get(reverse('secteurs:list'))
         self.assertEqual(response.status_code, 403)
-        
+
         # Création
         response = self.client.get(reverse('secteurs:create'))
         self.assertEqual(response.status_code, 403)
-        
+
         # Modification
         response = self.client.get(reverse('secteurs:update', args=[self.secteur.pk]))
         self.assertEqual(response.status_code, 403)
-        
+
         # Suppression
         response = self.client.get(reverse('secteurs:delete', args=[self.secteur.pk]))
         self.assertEqual(response.status_code, 403)
-        
+
         # Liste utilisateurs
         response = self.client.get(reverse('secteurs:user_list'))
         self.assertEqual(response.status_code, 403)
@@ -143,20 +143,20 @@ class PermissionsTest(TestCase):
     def test_superuser_only_access(self):
         """Test que seuls les superusers peuvent accéder."""
         self.client.login(email='admin@example.com', password='adminpass123')
-        
+
         # Toutes les vues devraient être accessibles
         response = self.client.get(reverse('secteurs:list'))
         self.assertEqual(response.status_code, 200)
-        
+
         response = self.client.get(reverse('secteurs:create'))
         self.assertEqual(response.status_code, 200)
-        
+
         response = self.client.get(reverse('secteurs:update', args=[self.secteur.pk]))
         self.assertEqual(response.status_code, 200)
-        
+
         response = self.client.get(reverse('secteurs:delete', args=[self.secteur.pk]))
         self.assertEqual(response.status_code, 200)
-        
+
         response = self.client.get(reverse('secteurs:user_list'))
         self.assertEqual(response.status_code, 200)
 
@@ -178,13 +178,13 @@ class InputValidationTest(TestCase):
         """Test que les scripts XSS sont échappés dans le nom."""
         # Tentative d'injection XSS
         xss_payload = '<script>alert("XSS")</script>'
-        
+
         response = self.client.post(reverse('secteurs:create'), {
             'nom': xss_payload,
             'couleur': '#ff0000',
             'ordre': 1
         })
-        
+
         # Si le formulaire est valide, le script devrait être échappé dans le template
         # Si invalide, c'est aussi une protection
         if response.status_code == 200:
@@ -196,17 +196,18 @@ class InputValidationTest(TestCase):
         """Test la protection contre l'injection SQL."""
         # Tentative d'injection SQL classique
         sql_payload = "'; DROP TABLE secteurs_secteur; --"
-        
+
         response = self.client.post(reverse('secteurs:create'), {
             'nom': sql_payload,
             'couleur': '#ff0000',
             'ordre': 1
         })
-        
+
         # Vérifier que la table existe toujours
-        self.assertTrue(Secteur.objects.model._meta.db_table in 
-                       [t.name for t in Secteur.objects.db.connection.introspection.table_names()])
-        
+        self.assertTrue(
+            Secteur.objects.model._meta.db_table in
+            [t.name for t in Secteur.objects.db.connection.introspection.table_names()])
+
         # Si le secteur a été créé, le nom devrait être stocké tel quel (échappé par l'ORM)
         if response.status_code == 302:  # Redirect après succès
             secteur = Secteur.objects.filter(nom=sql_payload).first()
@@ -221,12 +222,12 @@ class InputValidationTest(TestCase):
             couleur='#000000',
             ordre=1
         )
-        
+
         # Tentative de modifier un champ non présent dans le formulaire
         # (par exemple, essayer de modifier created_at via POST)
         original_created_at = secteur.created_at
-        
-        response = self.client.post(
+
+        self.client.post(
             reverse('secteurs:update', args=[secteur.pk]),
             {
                 'nom': 'MODIFIÉ',
@@ -236,9 +237,9 @@ class InputValidationTest(TestCase):
                 'created_at': '2020-01-01T00:00:00Z'
             }
         )
-        
+
         secteur.refresh_from_db()
-        
+
         # Le created_at ne devrait pas avoir changé
         self.assertEqual(secteur.created_at, original_created_at)
         # Mais le nom devrait avoir changé
@@ -251,7 +252,7 @@ class InputValidationTest(TestCase):
             'couleur': 'not-a-color',
             'ordre': 1
         })
-        
+
         # Le formulaire devrait être invalide
         self.assertEqual(response.status_code, 200)
         # Vérifier que le formulaire contient des erreurs
@@ -266,11 +267,10 @@ class InputValidationTest(TestCase):
             'couleur': '#ff0000',
             'ordre': 1
         })
-        
+
         # Le formulaire devrait être invalide
         self.assertEqual(response.status_code, 200)
         # Vérifier que le formulaire contient des erreurs
         self.assertIn('form', response.context)
         self.assertFalse(response.context['form'].is_valid())
         self.assertIn('nom', response.context['form'].errors)
-

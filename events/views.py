@@ -31,7 +31,7 @@ User = get_user_model()
 def can_manage_events(user) -> bool:
     """
     Vérifie si l'utilisateur peut gérer les événements.
-    
+
     Basé sur les groupes Django. L'utilisateur doit être dans un groupe
     ayant la permission events.add_event ou être superuser.
 
@@ -43,11 +43,11 @@ def can_manage_events(user) -> bool:
     """
     if not user.is_authenticated:
         return False
-    
+
     # Les superusers peuvent toujours gérer les événements
     if user.is_superuser:
         return True
-    
+
     # Vérifier les permissions via les groupes
     return user.has_perm('events.add_event') or user.has_perm('events.change_event')
 
@@ -72,7 +72,7 @@ def is_dga(user) -> bool:
 def can_view_event_stats(user):
     """
     Vérifie si l'utilisateur peut voir les statistiques des événements.
-    
+
     Accessible aux superusers et au rôle 'Chargé de communication'.
     """
     if not user.is_authenticated:
@@ -87,19 +87,19 @@ def can_view_event_stats(user):
 def event_stats_view(request: HttpRequest) -> HttpResponse:
     """
     Vue optimisée pour afficher les statistiques des événements.
-    
+
     Utilise des annotations pour calculer toutes les statistiques en une seule requête
     au lieu de plusieurs count() séparés.
     Utilise le cache pour améliorer les performances (10 minutes).
-    
+
     Accessible au Chargé de communication et Superadmin.
-    
+
     Args:
         request: Objet HttpRequest
-        
+
     Returns:
         HttpResponse: Réponse HTTP avec les statistiques
-        
+
     Example:
         La vue calcule :
         - Total d'événements
@@ -193,13 +193,12 @@ def event_stats_view(request: HttpRequest) -> HttpResponse:
         'validation_stats': validation_stats,
         'current_year': current_year,
     }
-    
+
     # Mettre en cache le contexte pour 10 minutes (pas la réponse HTTP)
     # Le contexte est sérialisable, contrairement à HttpResponse
     cache.set(cache_key, context, CACHE_DURATION_STATS)
-    
-    return render(request, 'events/stats.html', context)
 
+    return render(request, 'events/stats.html', context)
 
 
 def is_dgs(user) -> bool:
@@ -239,7 +238,7 @@ def can_validate_events(user) -> bool:
 def event_calendar_view(request: HttpRequest) -> HttpResponse:
     """
     Vue pour afficher le calendrier des événements.
-    
+
     Utilise le cache pour optimiser les performances.
 
     Args:
@@ -252,7 +251,7 @@ def event_calendar_view(request: HttpRequest) -> HttpResponse:
     secteur_id = request.GET.get('secteur', 'all')
     cache_key = f'event_calendar_{secteur_id}'
     events = cache.get(cache_key)
-    
+
     if events is None:
         # Récupérer tous les événements pour le calendrier
         # Optimisation : charger uniquement les champs nécessaires pour le calendrier
@@ -265,18 +264,18 @@ def event_calendar_view(request: HttpRequest) -> HttpResponse:
             'couleur_calendrier', 'adresse__ville', 'adresse__code_postal',
             'createur__first_name', 'createur__last_name'
         ).order_by('date_debut')
-        
+
         # Filtrer par secteur si demandé
         if secteur_id != 'all':
             try:
                 events = events.filter(secteurs__id=int(secteur_id))
             except ValueError:
                 pass
-        
+
         # Convertir en liste pour le cache (QuerySet n'est pas sérialisable)
         events = list(events)
         cache.set(cache_key, events, 60 * 5)  # 5 minutes
-    
+
     context = {
         'events': events,
         'can_view_stats': can_view_event_stats(request.user),
@@ -308,7 +307,7 @@ def event_list_view(request: HttpRequest) -> HttpResponse:
         'couleur_calendrier', 'createur__email', 'createur__first_name',
         'createur__last_name'
     ).order_by('-date_debut')
-    
+
     # Filtres
     secteur_id = request.GET.get('secteur')
     if secteur_id:
@@ -316,29 +315,29 @@ def event_list_view(request: HttpRequest) -> HttpResponse:
             events = events.filter(secteurs__id=int(secteur_id))
         except ValueError:
             pass
-    
+
     date_debut = request.GET.get('date_debut')
     if date_debut:
         try:
             events = events.filter(date_debut__gte=date_debut)
         except ValueError:
             pass
-    
+
     date_fin = request.GET.get('date_fin')
     if date_fin:
         try:
             events = events.filter(date_debut__lte=date_fin)
         except ValueError:
             pass
-    
+
     # Pagination
     paginator = Paginator(events, 25)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-    
+
     # Récupérer tous les secteurs pour le filtre
     secteurs = get_secteurs_for_display()
-    
+
     context = {
         'page_obj': page_obj,
         'events': page_obj,
@@ -368,7 +367,7 @@ def event_detail_view(request: HttpRequest, pk: int) -> HttpResponse:
         ),
         pk=pk
     )
-    
+
     context = {
         'event': event,
     }
@@ -382,7 +381,7 @@ def event_detail_view(request: HttpRequest, pk: int) -> HttpResponse:
 def event_create_view(request: HttpRequest) -> HttpResponse:
     """
     Vue pour créer un nouvel événement.
-    
+
     Utilise @transaction.non_atomic_requests pour éviter les verrouillages SQLite
     lors de l'upload de fichiers volumineux. Les transactions sont gérées manuellement
     de manière granulaire.
@@ -398,9 +397,9 @@ def event_create_view(request: HttpRequest) -> HttpResponse:
         post_data = request.POST.copy()
         if 'timezone' not in post_data or not post_data.get('timezone'):
             post_data['timezone'] = 'Europe/Paris'
-        
+
         form = EventForm(post_data)
-        
+
         if form.is_valid():
             # Sauvegarder l'événement dans une transaction courte
             with transaction.atomic():
@@ -411,10 +410,10 @@ def event_create_view(request: HttpRequest) -> HttpResponse:
                 if not event.timezone:
                     # Utiliser le timezone par défaut ou celui de l'utilisateur
                     event.timezone = 'Europe/Paris'
-                
+
                 event.save()
                 form.save_m2m()  # Sauvegarder les secteurs (ManyToMany)
-            
+
             # Traiter les images EN DEHORS de la transaction principale
             # pour éviter les verrouillages SQLite pendant la compression
             images = request.FILES.getlist('images')
@@ -432,29 +431,29 @@ def event_create_view(request: HttpRequest) -> HttpResponse:
                         )
                         continue
                     valid_images.append(img)
-                
+
                 # Limiter à 5 images
                 images = valid_images[:5]
-                
+
                 # Compter les images existantes pour la numérotation
                 # Utiliser count() car on a besoin du nombre exact pour la numérotation
                 existing_images_count = event.fichiers.filter(type_fichier='image').count()
-                
+
                 # Traiter les images avec la fonction factorisée
                 process_event_images(event, images, existing_images_count)
-            
+
             # Recalculer la couleur après l'association des secteurs
             # dans une transaction courte
             with transaction.atomic():
                 event.refresh_from_db()
                 event.couleur_calendrier = event._calculate_calendar_color()
                 event.save(update_fields=['couleur_calendrier'])
-            
+
             # Invalider les caches
             cache.delete('event_timeline_recent')
             cache.delete('event_calendar_all')
             cache.delete('event_stats_view')  # Invalider le cache des stats
-            
+
             logger.info(f'Événement créé: {event.titre} par {request.user.email}')
             messages.success(
                 request,
@@ -465,10 +464,10 @@ def event_create_view(request: HttpRequest) -> HttpResponse:
         form = EventForm()
         # Pré-remplir le timezone avec celui de l'utilisateur
         form.fields['timezone'].initial = 'Europe/Paris'
-    
+
     # Récupérer tous les secteurs pour l'affichage
     secteurs = get_secteurs_for_display()
-    
+
     context = {
         'form': form,
         'secteurs': secteurs,
@@ -483,7 +482,7 @@ def event_create_view(request: HttpRequest) -> HttpResponse:
 def event_update_view(request: HttpRequest, pk: int) -> HttpResponse:
     """
     Vue pour modifier un événement existant.
-    
+
     Utilise @transaction.non_atomic_requests pour éviter les verrouillages SQLite
     lors de l'upload de fichiers volumineux. Les transactions sont gérées manuellement
     de manière granulaire.
@@ -499,13 +498,13 @@ def event_update_view(request: HttpRequest, pk: int) -> HttpResponse:
         Event.objects.select_related('createur', 'adresse'),
         pk=pk
     )
-    
+
     # Vérifier que l'utilisateur peut modifier cet événement
     # (créateur ou superuser)
     if not request.user.is_superuser and event.createur != request.user:
         messages.error(request, _('Vous n\'avez pas la permission de modifier cet événement.'))
         return redirect('events:detail', pk=event.pk)
-    
+
     if request.method == 'POST':
         form = EventForm(request.POST, instance=event)
         if form.is_valid():
@@ -513,7 +512,7 @@ def event_update_view(request: HttpRequest, pk: int) -> HttpResponse:
             with transaction.atomic():
                 event = form.save()
                 form.save_m2m()  # Sauvegarder les secteurs
-            
+
             # Traiter les images EN DEHORS de la transaction principale
             # pour éviter les verrouillages SQLite pendant la compression
             images = request.FILES.getlist('images')
@@ -531,24 +530,24 @@ def event_update_view(request: HttpRequest, pk: int) -> HttpResponse:
                         )
                         continue
                     valid_images.append(img)
-                
+
                 # Compter les images existantes
                 # Utiliser count() car on a besoin du nombre exact pour limiter à 5
                 existing_images_count = event.fichiers.filter(type_fichier='image').count()
                 # Limiter le total à 5 images
                 max_new_images = min(5 - existing_images_count, len(valid_images))
                 images = valid_images[:max_new_images]
-                
+
                 # Traiter les images avec la fonction factorisée
                 process_event_images(event, images, existing_images_count)
-            
+
             # Recalculer la couleur après l'association des secteurs
             # dans une transaction courte
             with transaction.atomic():
                 event.refresh_from_db()
                 event.couleur_calendrier = event._calculate_calendar_color()
                 event.save(update_fields=['couleur_calendrier'])
-            
+
             # Invalider les caches
             cache.delete('event_timeline_recent')
             cache.delete('event_calendar_all')
@@ -558,7 +557,7 @@ def event_update_view(request: HttpRequest, pk: int) -> HttpResponse:
             secteurs_list = list(event.secteurs.all())
             for secteur in secteurs_list:
                 cache.delete(f'event_calendar_{secteur.id}')
-            
+
             logger.info(f'Événement modifié: {event.titre} par {request.user.email}')
             messages.success(
                 request,
@@ -567,10 +566,10 @@ def event_update_view(request: HttpRequest, pk: int) -> HttpResponse:
             return redirect('events:detail', pk=event.pk)
     else:
         form = EventForm(instance=event)
-    
+
     # Récupérer tous les secteurs pour l'affichage
     secteurs = get_secteurs_for_display()
-    
+
     context = {
         'form': form,
         'event': event,
@@ -597,32 +596,32 @@ def event_delete_view(request: HttpRequest, pk: int) -> HttpResponse:
         Event.objects.select_related('createur'),
         pk=pk
     )
-    
+
     # Vérifier que l'utilisateur peut supprimer cet événement
     if not request.user.is_superuser and event.createur != request.user:
         messages.error(request, _('Vous n\'avez pas la permission de supprimer cet événement.'))
         return redirect('events:detail', pk=event.pk)
-    
+
     if request.method == 'POST':
         titre = event.titre
         # Récupérer les secteurs avant suppression pour invalider le cache
         secteurs_ids = list(event.secteurs.values_list('id', flat=True))
         event.delete()
-        
+
         # Invalider les caches
         cache.delete('event_timeline_recent')
         cache.delete('event_calendar_all')
         cache.delete('event_stats_view')  # Invalider le cache des stats
         for secteur_id in secteurs_ids:
             cache.delete(f'event_calendar_{secteur_id}')
-        
+
         logger.info(f'Événement supprimé: {titre} par {request.user.email}')
         messages.success(
             request,
             _('L\'événement "%(titre)s" a été supprimé avec succès.') % {'titre': titre}
         )
         return redirect('events:calendar')
-    
+
     context = {
         'event': event,
     }
@@ -634,18 +633,18 @@ def event_delete_view(request: HttpRequest, pk: int) -> HttpResponse:
 def event_timeline_view(request: HttpRequest) -> HttpResponse:
     """
     Vue optimisée pour afficher la timeline des événements.
-    
+
     Utilise le cache pour optimiser les performances.
-    
+
     Optimisations :
     - select_related pour ForeignKey/OneToOne
     - prefetch_related pour ManyToMany/Reverse FK
     - only() pour charger uniquement les champs nécessaires
     - Pré-calcul de tous les formats dans la vue
-    
+
     Args:
         request: Objet HttpRequest
-    
+
     Returns:
         HttpResponse: Réponse HTTP avec la timeline
     """
@@ -661,7 +660,7 @@ def event_timeline_view(request: HttpRequest) -> HttpResponse:
         'July': 'juillet', 'August': 'août', 'September': 'septembre',
         'October': 'octobre', 'November': 'novembre', 'December': 'décembre'
     }
-    
+
     # Une seule requête optimisée avec limite pour éviter de charger trop de données
     # Limiter à TIMELINE_EVENTS_LIMIT événements récents pour optimiser les performances
     events = Event.objects.select_related(
@@ -676,14 +675,14 @@ def event_timeline_view(request: HttpRequest) -> HttpResponse:
         'createur__id', 'createur__first_name', 'createur__last_name', 'createur__email',
         'adresse__ville', 'adresse__code_postal', 'adresse__rue'
     ).order_by('-date_debut')[:TIMELINE_EVENTS_LIMIT]
-    
+
     # Grouper efficacement en Python
     timeline_data = defaultdict(lambda: {'month_name': '', 'count': 0, 'dates': defaultdict(list)})
-    
+
     for event in events:
         month_key = event.date_debut.strftime('%Y-%m')
         date_key = event.date_debut.date().isoformat()
-        
+
         # Calculer le nom du mois une seule fois par mois
         if not timeline_data[month_key]['month_name']:
             # Toujours utiliser le mapping manuel pour éviter les problèmes d'encodage
@@ -692,26 +691,26 @@ def event_timeline_view(request: HttpRequest) -> HttpResponse:
             # Capitaliser correctement (première lettre en majuscule)
             month_fr_capitalized = month_fr.capitalize() if month_fr else month_en
             timeline_data[month_key]['month_name'] = f"{month_fr_capitalized} {event.date_debut.year}"
-        
+
         # Pré-calculer toutes les données nécessaires
         createur_nom = event.createur.get_full_name() or event.createur.email
-        
+
         # Formater le jour de la semaine - toujours utiliser le mapping manuel
         day_en = event.date_debut.strftime('%A')
         day_name = JOURS_FR.get(day_en, day_en)
-        
+
         # Déterminer si c'est une création (même jour que created_at)
         is_creation = (
             event.date_debut.date() == event.created_at.date() if event.created_at else False
         )
-        
+
         # Déterminer si l'événement est passé
         now = timezone.now()
         if event.date_fin:
             is_past = event.date_fin < now
         else:
             is_past = event.date_debut < now
-        
+
         event_data = {
             'event': event,
             'day_name': day_name,
@@ -722,15 +721,15 @@ def event_timeline_view(request: HttpRequest) -> HttpResponse:
             'is_creation': is_creation,
             'is_past': is_past,
         }
-        
+
         # Ajouter l'heure de fin si présente
         if event.date_fin:
             event_data['date_fin_formatted'] = event.date_fin.strftime('%d/%m/%Y')
             event_data['heure_fin'] = event.date_fin.strftime('%H:%M')
-        
+
         timeline_data[month_key]['dates'][date_key].append(event_data)
         timeline_data[month_key]['count'] += 1
-    
+
     # Convertir en structure ordonnée pour le template
     timeline_months = []
     for month_key in sorted(timeline_data.keys(), reverse=True):
@@ -752,7 +751,7 @@ def event_timeline_view(request: HttpRequest) -> HttpResponse:
             'count': month_data['count'],
             'dates': dates_list
         })
-    
+
     context = {
         'timeline_months': timeline_months,
     }
@@ -764,7 +763,7 @@ def event_timeline_view(request: HttpRequest) -> HttpResponse:
 def my_events_view(request: HttpRequest) -> HttpResponse:
     """
     Vue pour afficher les événements de l'utilisateur connecté.
-    
+
     Affiche les événements futurs OU les événements passés avec une demande de validation.
 
     Args:
@@ -783,9 +782,9 @@ def my_events_view(request: HttpRequest) -> HttpResponse:
     events = Event.objects.filter(
         createur=request.user
     ).filter(
-        Q(date_debut__gte=now) |
-        Q(demande_validation_dga=True) |
-        Q(demande_validation_dgs=True)
+        Q(date_debut__gte=now)
+        | Q(demande_validation_dga=True)
+        | Q(demande_validation_dgs=True)
     ).select_related(
         'createur', 'adresse'
     ).prefetch_related(
@@ -883,4 +882,3 @@ def event_validate_view(request: HttpRequest, pk: int) -> HttpResponse:
         'user_is_dgs': user_is_dgs,
     }
     return render(request, 'events/validate.html', context)
-

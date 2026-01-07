@@ -37,15 +37,3 @@ def dashboard_view(request):
         'stats': stats,
     }
     return render(request, 'dashboard/index.html', context)
-
-
-
-
-
-
-
-
-
-
-
-

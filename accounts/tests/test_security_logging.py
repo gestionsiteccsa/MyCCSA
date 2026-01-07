@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 User = get_user_model()
 
+
 class SecurityLoggingTest(TestCase):
     """
     Tests pour vérifier que les événements de sécurité sont loggés.
@@ -31,7 +32,7 @@ class SecurityLoggingTest(TestCase):
             'password': 'testpass123',
         }
         self.client.post(reverse('accounts:login'), data)
-        
+
         # Vérifier que logger.info a été appelé avec CONNEXION_REUSSIE
         calls = [call.args[0] for call in mock_logger.info.call_args_list]
         self.assertTrue(any("CONNEXION_REUSSIE" in s for s in calls))
@@ -44,7 +45,7 @@ class SecurityLoggingTest(TestCase):
             'password': 'wrongpassword',
         }
         self.client.post(reverse('accounts:login'), data)
-        
+
         # Vérifier que logger.warning a été appelé avec CONNEXION_ECHOUEE
         calls = [call.args[0] for call in mock_logger.warning.call_args_list]
         self.assertTrue(any("CONNEXION_ECHOUEE" in s for s in calls))
@@ -59,7 +60,7 @@ class SecurityLoggingTest(TestCase):
             'new_password2': 'newpass123',
         }
         self.client.post(reverse('accounts:password_change'), data)
-        
+
         # Vérifier que logger.info a été appelé avec CHANGEMENT_MOT_DE_PASSE
         calls = [call.args[0] for call in mock_logger.info.call_args_list]
         self.assertTrue(any("CHANGEMENT_MOT_DE_PASSE" in s for s in calls))
@@ -73,7 +74,7 @@ class SecurityLoggingTest(TestCase):
             'password2': 'testpass123',
         }
         self.client.post(reverse('accounts:register'), data)
-        
+
         # Vérifier que logger.info a été appelé avec COMPTE_CREE
         calls = [call.args[0] for call in mock_logger.info.call_args_list]
         self.assertTrue(any("COMPTE_CREE" in s for s in calls))

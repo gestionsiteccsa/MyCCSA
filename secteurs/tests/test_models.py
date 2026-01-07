@@ -44,12 +44,12 @@ class SecteurModelTest(TestCase):
 
     def test_secteur_ordering(self):
         """Test l'ordre de tri des secteurs."""
-        secteur2 = Secteur.objects.create(
+        Secteur.objects.create(
             nom='RURALITÉ',
             couleur='#005b24',
             ordre=2
         )
-        secteur3 = Secteur.objects.create(
+        Secteur.objects.create(
             nom='AUTRE',
             couleur='#ff0000',
             ordre=1
@@ -107,15 +107,3 @@ class UserSecteursRelationTest(TestCase):
     def test_user_secteurs_empty(self):
         """Test qu'un utilisateur peut n'avoir aucun secteur."""
         self.assertEqual(self.user.secteurs.count(), 0)
-
-
-
-
-
-
-
-
-
-
-
-

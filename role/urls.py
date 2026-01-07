@@ -15,4 +15,3 @@ urlpatterns = [
     path('users/<int:user_id>/role/', views.user_role_view, name='user_role'),
     path('api/check-level/', views.check_level_available, name='check_level'),
 ]
-

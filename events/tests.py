@@ -23,11 +23,11 @@ User = get_user_model()
 def create_test_image(filename='test.png', size=(100, 100)):
     """
     Crée une image de test.
-    
+
     Args:
         filename: Nom du fichier
         size: Taille de l'image (width, height)
-    
+
     Returns:
         SimpleUploadedFile: Fichier image pour les tests
     """
@@ -611,24 +611,26 @@ class EventPerformanceTest(TestCase):
         reset_queries()
         response = self.client.get(reverse('events:calendar'))
         query_count = len(connection.queries)
-        
+
         self.assertEqual(response.status_code, 200)
         # Avec select_related et prefetch_related, le nombre de requêtes
         # devrait être faible même avec 20 événements
         # (1 session, 1 user, 1 events avec relations, peut-être quelques autres)
-        self.assertLess(query_count, 10,
-                       f"Trop de requêtes SQL: {query_count}")
+        self.assertLess(
+            query_count, 10,
+            f"Trop de requêtes SQL: {query_count}")
 
     def test_list_view_query_count(self):
         """Test que la vue liste utilise select_related et prefetch_related."""
         reset_queries()
         response = self.client.get(reverse('events:list'))
         query_count = len(connection.queries)
-        
+
         self.assertEqual(response.status_code, 200)
         # Avec only(), select_related et prefetch_related, le nombre devrait être faible
-        self.assertLess(query_count, 10,
-                       f"Trop de requêtes SQL: {query_count}")
+        self.assertLess(
+            query_count, 10,
+            f"Trop de requêtes SQL: {query_count}")
 
     def test_detail_view_query_count(self):
         """Test que la vue détail utilise select_related et prefetch_related."""
@@ -638,48 +640,52 @@ class EventPerformanceTest(TestCase):
             reverse('events:detail', kwargs={'pk': event.pk})
         )
         query_count = len(connection.queries)
-        
+
         self.assertEqual(response.status_code, 200)
         # Une seule requête principale avec les relations préchargées
-        self.assertLess(query_count, 8,
-                       f"Trop de requêtes SQL: {query_count}")
+        self.assertLess(
+            query_count, 8,
+            f"Trop de requêtes SQL: {query_count}")
 
     def test_timeline_view_query_count(self):
         """Test que la vue timeline utilise les optimisations."""
         reset_queries()
         response = self.client.get(reverse('events:timeline'))
         query_count = len(connection.queries)
-        
+
         self.assertEqual(response.status_code, 200)
         # Avec only(), select_related et prefetch_related
-        self.assertLess(query_count, 10,
-                       f"Trop de requêtes SQL: {query_count}")
+        self.assertLess(
+            query_count, 10,
+            f"Trop de requêtes SQL: {query_count}")
 
     def test_list_view_performance_with_many_events(self):
         """Test les performances avec beaucoup d'événements."""
         # Créer 100 événements supplémentaires
         for i in range(100):
             Event.objects.create(
-                titre=f'Event {i+20}',
-                date_debut=timezone.now() + timezone.timedelta(days=i+20),
+                titre=f'Event {i + 20}',
+                date_debut=timezone.now() + timezone.timedelta(days=i + 20),
                 createur=self.user
             )
-        
+
         reset_queries()
         start_time = time.time()
-        
+
         response = self.client.get(reverse('events:list'))
-        
+
         elapsed_time = time.time() - start_time
         query_count = len(connection.queries)
-        
+
         self.assertEqual(response.status_code, 200)
         # Le temps de réponse devrait rester raisonnable
-        self.assertLess(elapsed_time, 1.0,
-                       f"Temps de réponse trop long: {elapsed_time:.3f}s")
+        self.assertLess(
+            elapsed_time, 1.0,
+            f"Temps de réponse trop long: {elapsed_time:.3f}s")
         # Le nombre de requêtes ne devrait pas croître linéairement
-        self.assertLess(query_count, 15,
-                       f"Trop de requêtes SQL: {query_count}")
+        self.assertLess(
+            query_count, 15,
+            f"Trop de requêtes SQL: {query_count}")
 
     def test_no_n_plus_one_queries(self):
         """Test qu'il n'y a pas de problème N+1 queries."""
@@ -700,14 +706,14 @@ class EventPerformanceTest(TestCase):
                     taille=1024,
                     ordre=j
                 )
-        
+
         reset_queries()
         response = self.client.get(reverse('events:list'))
         query_count = len(connection.queries)
-        
+
         self.assertEqual(response.status_code, 200)
         # Même avec des fichiers, le nombre de requêtes devrait rester faible
         # grâce à prefetch_related
-        self.assertLess(query_count, 12,
-                       f"Problème N+1 queries détecté: {query_count}")
-
+        self.assertLess(
+            query_count, 12,
+            f"Problème N+1 queries détecté: {query_count}")

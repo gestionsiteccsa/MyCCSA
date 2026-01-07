@@ -122,15 +122,3 @@ class DashboardUtilsTest(TestCase):
         except ImportError:
             # Si l'app secteurs n'est pas disponible, on skip ce test
             pass
-
-
-
-
-
-
-
-
-
-
-
-

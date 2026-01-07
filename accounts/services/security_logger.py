@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 logger = logging.getLogger('django.security')
 User = get_user_model()
 
+
 class SecurityLogger:
     """
     Service pour centraliser les logs liés à la sécurité.

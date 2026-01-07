@@ -200,7 +200,7 @@ class LoginTest(TestCase):
 
     def test_login_inactive_user(self):
         """Test connexion utilisateur inactif."""
-        inactive_user = User.objects.create_user(
+        User.objects.create_user(
             email='inactive@example.com',
             password='testpass123',
             email_verified=True,
@@ -216,7 +216,7 @@ class LoginTest(TestCase):
 
     def test_login_unverified_email(self):
         """Test connexion email non vérifié."""
-        unverified_user = User.objects.create_user(
+        User.objects.create_user(
             email='unverified@example.com',
             password='testpass123',
             email_verified=False
@@ -411,7 +411,7 @@ class ProfileTest(TestCase):
 
     def test_profile_edit_duplicate_email(self):
         """Test modification profil avec email déjà utilisé."""
-        other_user = User.objects.create_user(
+        User.objects.create_user(
             email='other@example.com',
             password='testpass123',
             email_verified=True

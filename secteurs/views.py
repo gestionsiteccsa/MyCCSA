@@ -45,7 +45,7 @@ def secteur_list_view(request):
     # Optimisation : ne charger que les champs nécessaires pour éviter de charger
     # les relations ManyToMany et autres champs inutiles
     secteurs = Secteur.objects.only('nom', 'couleur', 'ordre').order_by('ordre', 'nom')
-    
+
     # Pagination
     paginator = Paginator(secteurs, 25)
     page_number = request.GET.get('page')
@@ -143,7 +143,7 @@ def secteur_delete_view(request, pk):
         HttpResponse: Réponse HTTP avec confirmation ou redirection
     """
     from django.db.models import Count
-    
+
     secteur = get_object_or_404(
         Secteur.objects.annotate(user_count=Count('utilisateurs')),
         pk=pk
@@ -194,7 +194,7 @@ def user_secteurs_view(request, user_id):
             # Filtrer les valeurs vides
             secteurs_filtered = [s for s in secteurs_list if s and s.strip()]
             post_data.setlist('secteurs', secteurs_filtered)
-        
+
         form = UserSecteursForm(post_data, user=user)
         if form.is_valid():
             # Mettre à jour les secteurs de l'utilisateur
@@ -236,7 +236,7 @@ def user_list_view(request):
         HttpResponse: Réponse HTTP avec la liste des utilisateurs
     """
     users = User.objects.prefetch_related('secteurs').all().order_by('-date_joined')
-    
+
     # Pagination
     paginator = Paginator(users, 25)
     page_number = request.GET.get('page')
@@ -247,4 +247,3 @@ def user_list_view(request):
         'users': page_obj,
     }
     return render(request, 'secteurs/user_list.html', context)
-

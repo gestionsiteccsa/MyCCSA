@@ -18,6 +18,3 @@ urlpatterns = [
     path('<int:pk>/delete/', views.event_delete_view, name='delete'),
     path('<int:pk>/valider/', views.event_validate_view, name='validate'),
 ]
-
-
-

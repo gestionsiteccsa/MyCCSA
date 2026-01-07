@@ -29,4 +29,3 @@ PAGINATION_PAR_PAGE = 25
 
 # Durée du cache en secondes (1 an)
 CACHE_DURATION_ONE_YEAR = 31536000
-

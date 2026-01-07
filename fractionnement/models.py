@@ -94,14 +94,14 @@ class CycleHebdomadaire(models.Model):
             ValidationError: Si les données sont invalides
         """
         super().clean()
-        
+
         if self.heures_semaine < HEURES_SEMAINE_MIN or self.heures_semaine > HEURES_SEMAINE_MAX:
             raise ValidationError({
                 'heures_semaine': _(
                     'Les heures par semaine doivent être entre %(min)s et %(max)s.'
                 ) % {'min': HEURES_SEMAINE_MIN, 'max': HEURES_SEMAINE_MAX}
             })
-        
+
         if self.quotite_travail < Decimal('0.5') or self.quotite_travail > Decimal('1.0'):
             raise ValidationError({
                 'quotite_travail': _('La quotité de travail doit être entre 0.5 et 1.0.')
@@ -274,7 +274,7 @@ class PeriodeConge(models.Model):
             ValidationError: Si les données sont invalides
         """
         super().clean()
-        
+
         if self.date_debut and self.date_fin and self.date_fin < self.date_debut:
             raise ValidationError({
                 'date_fin': _('La date de fin doit être postérieure ou égale à la date de début.')
@@ -342,4 +342,3 @@ class CalculFractionnement(models.Model):
             str: Description du calcul
         """
         return f"{self.user.get_full_name() or self.user.email} - {self.annee} ({self.jours_fractionnement} jour(s))"
-

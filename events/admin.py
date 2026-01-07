@@ -27,7 +27,7 @@ class EventAdmin(admin.ModelAdmin):
     readonly_fields = ['created_at', 'updated_at', 'couleur_calendrier']
     # Optimisation SQL : précharger les relations ForeignKey pour éviter N+1 queries
     list_select_related = ['createur', 'adresse']
-    
+
     fieldsets = (
         ('Informations générales', {
             'fields': ('titre', 'description', 'lieu', 'adresse')
@@ -54,6 +54,3 @@ class EventFileAdmin(admin.ModelAdmin):
     list_filter = ['type_fichier', 'uploaded_at']
     search_fields = ['nom', 'event__titre']
     readonly_fields = ['uploaded_at', 'taille']
-
-
-

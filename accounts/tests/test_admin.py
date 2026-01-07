@@ -140,4 +140,3 @@ class UserAdminTest(TestCase):
         response = self.client.get(url)
         # Doit rediriger vers la page de connexion admin
         self.assertEqual(response.status_code, 302)
-

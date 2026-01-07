@@ -53,11 +53,11 @@ def calculer_paques(annee: int) -> date:
     h = (19 * a + b - d - g + 15) % 30
     i = c // 4
     k = c % 4
-    l = (32 + 2 * e + 2 * i - h - k) % 7
-    m = (a + 11 * h + 22 * l) // 451
-    mois = (h + l - 7 * m + 114) // 31
-    jour = ((h + l - 7 * m + 114) % 31) + 1
-    
+    l_val = (32 + 2 * e + 2 * i - h - k) % 7
+    m = (a + 11 * h + 22 * l_val) // 451
+    mois = (h + l_val - 7 * m + 114) // 31
+    jour = ((h + l_val - 7 * m + 114) % 31) + 1
+
     return date(annee, mois, jour)
 
 
@@ -72,7 +72,7 @@ def get_jours_feries_variables(annee: int) -> List[date]:
         List[date]: Liste des jours fériés variables
     """
     paques = calculer_paques(annee)
-    
+
     return [
         paques - timedelta(days=2),  # Vendredi saint (non férié en France métropolitaine, mais inclus pour référence)
         paques,                       # Pâques
@@ -85,7 +85,7 @@ def get_jours_feries_variables(annee: int) -> List[date]:
 def get_jours_feries(annee: int) -> List[date]:
     """
     Retourne la liste complète des jours fériés pour une année donnée.
-    
+
     Utilise le cache pour éviter de recalculer les jours fériés à chaque appel.
 
     Args:
@@ -96,21 +96,21 @@ def get_jours_feries(annee: int) -> List[date]:
     """
     cache_key = f'jours_feries_{annee}'
     jours_feries = cache.get(cache_key)
-    
+
     if jours_feries is None:
         jours_feries = get_jours_feries_fixes(annee)
         # Ajouter les jours fériés variables (sauf vendredi saint qui n'est pas férié en France métropolitaine)
         paques = calculer_paques(annee)
         jours_feries.extend([
-            paques,                       # Pâques
-            paques + timedelta(days=1),   # Lundi de Pâques
-            paques + timedelta(days=39), # Ascension
-            paques + timedelta(days=50), # Lundi de Pentecôte
+            paques,                        # Pâques
+            paques + timedelta(days=1),    # Lundi de Pâques
+            paques + timedelta(days=39),   # Ascension
+            paques + timedelta(days=50),   # Lundi de Pentecôte
         ])
         jours_feries = sorted(jours_feries)
         # Mettre en cache pour 1 an
         cache.set(cache_key, jours_feries, CACHE_DURATION_ONE_YEAR)
-    
+
     return jours_feries
 
 
@@ -157,17 +157,17 @@ def compter_jours_ouvres(date_debut: date, date_fin: date, exclure_feries: bool 
     """
     if annee is None:
         annee = date_debut.year
-    
+
     jours_feries = set(get_jours_feries(annee)) if exclure_feries else set()
-    
+
     compteur = 0
     current = date_debut
-    
+
     while current <= date_fin:
         if est_jour_ouvre(current) and current not in jours_feries:
             compteur += 1
         current += timedelta(days=1)
-    
+
     return compteur
 
 
@@ -186,26 +186,26 @@ def compter_jours_ouvrables(date_debut: date, date_fin: date, exclure_feries: bo
     """
     if annee is None:
         annee = date_debut.year
-    
+
     jours_feries = set(get_jours_feries(annee)) if exclure_feries else set()
-    
+
     compteur = 0
     current = date_debut
-    
+
     while current <= date_fin:
         if est_jour_ouvrable(current) and current not in jours_feries:
             compteur += 1
         current += timedelta(days=1)
-    
+
     return compteur
 
 
 def get_vacances_zone_b_data() -> Dict[int, List[Tuple[date, date, str]]]:
     """
     Retourne les données des vacances scolaires zone B.
-    
+
     Format: {année: [(date_debut, date_fin, nom), ...]}
-    
+
     Note: Pour l'instant, retourne un dictionnaire vide.
     Les données peuvent être chargées depuis un fichier JSON ou une API.
 
@@ -221,7 +221,7 @@ def get_vacances_zone_b_data() -> Dict[int, List[Tuple[date, date, str]]]:
 def get_vacances_zone_b(annee: int) -> List[Tuple[date, date, str]]:
     """
     Retourne les périodes de vacances scolaires zone B pour une année donnée.
-    
+
     Utilise le cache pour éviter de recalculer les vacances à chaque appel.
 
     Args:
@@ -232,13 +232,13 @@ def get_vacances_zone_b(annee: int) -> List[Tuple[date, date, str]]:
     """
     cache_key = f'vacances_zone_b_{annee}'
     vacances = cache.get(cache_key)
-    
+
     if vacances is None:
         vacances_data = get_vacances_zone_b_data()
         vacances = vacances_data.get(annee, [])
         # Mettre en cache pour 1 an
         cache.set(cache_key, vacances, CACHE_DURATION_ONE_YEAR)
-    
+
     return vacances
 
 
@@ -254,7 +254,7 @@ def est_dans_periode_principale(d: date) -> bool:
     """
     mois = d.month
     jour = d.day
-    
+
     # Période principale: 1er mai (5) au 31 octobre (10)
     if mois == 5 and jour >= 1:
         return True
@@ -262,7 +262,7 @@ def est_dans_periode_principale(d: date) -> bool:
         return True
     if mois == 10 and jour <= 31:
         return True
-    
+
     return False
 
 
@@ -277,8 +277,3 @@ def est_hors_periode_principale(d: date) -> bool:
         bool: True si hors période principale, False sinon
     """
     return not est_dans_periode_principale(d)
-
-
-
-
-

@@ -18,15 +18,3 @@ class EventsConfig(AppConfig):
         Méthode appelée quand l'application est prête.
         """
         import events.signals  # noqa
-
-
-
-
-
-
-
-
-
-
-
-

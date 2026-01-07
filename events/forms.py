@@ -63,7 +63,7 @@ class EventAddressForm(forms.ModelForm):
 
         Raises:
             ValidationError: Si la ville est vide
-            
+
         Example:
             >>> form = EventAddressForm({'ville': '  Paris  '})
             >>> form.is_valid()
@@ -96,7 +96,7 @@ class EventFileForm(forms.ModelForm):
     def clean_fichier(self) -> Optional[UploadedFile]:
         """
         Valide le fichier uploadé.
-        
+
         Vérifie la taille et le type MIME du fichier.
 
         Returns:
@@ -104,7 +104,7 @@ class EventFileForm(forms.ModelForm):
 
         Raises:
             ValidationError: Si le fichier est invalide (taille ou type)
-            
+
         Example:
             >>> form = EventFileForm({'fichier': large_file})
             >>> form.is_valid()  # Raises ValidationError si fichier trop gros
@@ -133,7 +133,7 @@ class EventFileForm(forms.ModelForm):
         try:
             # Sauvegarder la position du fichier
             fichier.seek(0)
-            
+
             if content_type in ALLOWED_IMAGE_TYPES:
                 # Pour les images, utiliser Pillow pour vérifier le type réel
                 from PIL import Image
@@ -174,7 +174,7 @@ class EventFileForm(forms.ModelForm):
     def save(self, commit: bool = True) -> EventFile:
         """
         Sauvegarde le fichier avec les métadonnées.
-        
+
         Compresse automatiquement les images avant sauvegarde.
 
         Args:
@@ -182,20 +182,20 @@ class EventFileForm(forms.ModelForm):
 
         Returns:
             EventFile: Instance du fichier sauvegardé
-            
+
         Example:
             >>> form = EventFileForm({'fichier': image_file})
             >>> if form.is_valid():
             >>>     event_file = form.save()
         """
         instance = super().save(commit=False)
-        
+
         if instance.fichier:
             # Déterminer le type de fichier
             content_type = instance.fichier.content_type
             if content_type in ALLOWED_IMAGE_TYPES:
                 instance.type_fichier = 'image'
-                
+
                 # Compresser l'image si c'est une image
                 compressed_file = compress_and_optimize_image(instance.fichier)
                 if compressed_file:
@@ -206,17 +206,17 @@ class EventFileForm(forms.ModelForm):
                 else:
                     # Si la compression a échoué, utiliser l'original
                     instance.taille = instance.fichier.size
-                    
+
             elif content_type in ALLOWED_PDF_TYPES:
                 instance.type_fichier = 'pdf'
                 instance.taille = instance.fichier.size
-            
+
             # Stocker le nom original
             instance.nom = instance.fichier.name
-        
+
         if commit:
             instance.save()
-        
+
         return instance
 
 
@@ -342,7 +342,7 @@ class EventForm(forms.ModelForm):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """
         Initialise le formulaire.
-        
+
         Configure les querysets et pré-remplit les champs si l'événement existe.
 
         Args:
@@ -350,14 +350,14 @@ class EventForm(forms.ModelForm):
             **kwargs: Arguments nommés (peut contenir 'instance' pour modification)
         """
         super().__init__(*args, **kwargs)
-        
+
         # Configurer le queryset des secteurs
         self.fields['secteurs'].queryset = Secteur.objects.all().order_by('ordre', 'nom')
         self.fields['secteurs'].required = False
-        
+
         # Rendre timezone non obligatoire (valeur par défaut sera ajoutée dans la vue)
         self.fields['timezone'].required = False
-        
+
         # Pré-remplir les champs d'adresse si l'événement existe
         if self.instance and self.instance.pk and self.instance.adresse:
             adresse = self.instance.adresse
@@ -366,7 +366,7 @@ class EventForm(forms.ModelForm):
             self.fields['adresse_code_postal'].initial = adresse.code_postal
             self.fields['adresse_pays'].initial = adresse.pays
             self.fields['adresse_complement'].initial = adresse.complement
-        
+
         # Pré-remplir la date de publication si l'événement existe
         if self.instance and self.instance.pk and self.instance.date_publication_avant_le:
             self.fields['date_publication_avant_le'].initial = self.instance.date_publication_avant_le
@@ -381,25 +381,25 @@ class EventForm(forms.ModelForm):
 
         Raises:
             ValidationError: Si date_fin < date_debut
-            
+
         Example:
             >>> form = EventForm({'date_debut': '2024-01-02T10:00', 'date_fin': '2024-01-01T10:00'})
             >>> form.is_valid()  # False, ValidationError
         """
         date_debut = self.cleaned_data.get('date_debut')
         date_fin = self.cleaned_data.get('date_fin')
-        
+
         if date_fin and date_debut and date_fin < date_debut:
             raise ValidationError(
                 _('La date de fin doit être postérieure à la date de début.')
             )
-        
+
         return date_fin
 
     def clean_date_publication_avant_le(self) -> Optional[Any]:
         """
         Valide la date de publication.
-        
+
         Retourne None si la case n'est pas cochée ou si aucune date n'est fournie.
 
         Returns:
@@ -407,15 +407,15 @@ class EventForm(forms.ModelForm):
         """
         date_publication_active = self.cleaned_data.get('date_publication_active', False)
         date_publication = self.cleaned_data.get('date_publication_avant_le')
-        
+
         # Si la case est cochée mais pas de date, retourner None
         if date_publication_active and not date_publication:
             return None
-        
+
         # Si la case n'est pas cochée, retourner None
         if not date_publication_active:
             return None
-        
+
         return date_publication
 
     def clean_timezone(self) -> str:
@@ -427,7 +427,7 @@ class EventForm(forms.ModelForm):
 
         Raises:
             ValidationError: Si le timezone n'est pas autorisé
-            
+
         Example:
             >>> form = EventForm({'timezone': 'Invalid/Timezone'})
             >>> form.is_valid()  # False, ValidationError
@@ -442,7 +442,7 @@ class EventForm(forms.ModelForm):
     def save(self, commit: bool = True) -> Event:
         """
         Sauvegarde l'événement et son adresse.
-        
+
         Crée ou met à jour l'adresse associée si une ville est renseignée.
         Gère également les demandes de validation DGA/DGS.
 
@@ -451,7 +451,7 @@ class EventForm(forms.ModelForm):
 
         Returns:
             Event: Instance de l'événement sauvegardé
-            
+
         Example:
             >>> form = EventForm({'titre': 'Test', 'date_debut': '2024-01-01T10:00'})
             >>> if form.is_valid():
@@ -460,21 +460,21 @@ class EventForm(forms.ModelForm):
             >>>     event.save()
         """
         instance = super().save(commit=False)
-        
+
         # Gérer l'adresse
         adresse_rue = self.cleaned_data.get('adresse_rue', '').strip()
         adresse_ville = self.cleaned_data.get('adresse_ville', '').strip()
         adresse_code_postal = self.cleaned_data.get('adresse_code_postal', '').strip()
         adresse_pays = self.cleaned_data.get('adresse_pays', '').strip() or 'France'
         adresse_complement = self.cleaned_data.get('adresse_complement', '').strip()
-        
+
         # Créer ou mettre à jour l'adresse si la ville est renseignée
         if adresse_ville:
             if instance.adresse:
                 adresse = instance.adresse
             else:
                 adresse = EventAddress()
-            
+
             adresse.rue = adresse_rue or None
             adresse.ville = adresse_ville
             adresse.code_postal = adresse_code_postal or None
@@ -486,7 +486,7 @@ class EventForm(forms.ModelForm):
             # Supprimer l'adresse si la ville n'est plus renseignée
             instance.adresse.delete()
             instance.adresse = None
-        
+
         # Gérer la date de publication
         date_publication_active = self.cleaned_data.get('date_publication_active', False)
         if date_publication_active:

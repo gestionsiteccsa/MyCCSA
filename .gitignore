@@ -91,3 +91,4 @@ package-lock.json
 *.tmp
 *.temp
 
+analyse/

@@ -19,12 +19,12 @@ class EventWorkflowDGADGSTest(TestCase):
     def setUp(self):
         """Configuration initiale."""
         self.client = Client()
-        
+
         # Créer les rôles (avec niveau requis)
         self.role_dga = Role.objects.create(nom='DGA', niveau=3)
         self.role_dgs = Role.objects.create(nom='DGS', niveau=4)
         self.role_communication = Role.objects.create(nom='Chargé de communication', niveau=2)
-        
+
         # Créer les utilisateurs
         self.user_creator = User.objects.create_user(
             email='creator@example.com',
@@ -40,28 +40,28 @@ class EventWorkflowDGADGSTest(TestCase):
             content_type=content_type
         )
         self.user_creator.user_permissions.add(permission)
-        
+
         self.user_dga = User.objects.create_user(
             email='dga@example.com',
             password='testpass123',
             email_verified=True,
             role=self.role_dga
         )
-        
+
         self.user_dgs = User.objects.create_user(
             email='dgs@example.com',
             password='testpass123',
             email_verified=True,
             role=self.role_dgs
         )
-        
+
         self.user_communication = User.objects.create_user(
             email='communication@example.com',
             password='testpass123',
             email_verified=True,
             role=self.role_communication
         )
-        
+
         # Créer un secteur
         self.secteur = Secteur.objects.create(
             nom='SANTÉ_INTEGRATION',
@@ -72,7 +72,7 @@ class EventWorkflowDGADGSTest(TestCase):
     def test_complete_validation_workflow_dga(self):
         """
         Test le workflow complet de validation DGA.
-        
+
         Scénario :
         1. Créateur crée un événement avec demande de validation DGA
         2. DGA valide l'événement
@@ -91,12 +91,12 @@ class EventWorkflowDGADGSTest(TestCase):
         }
         response = self.client.post(reverse('events:create'), data)
         self.assertEqual(response.status_code, 302)
-        
+
         # Récupérer l'événement créé
         event = Event.objects.get(titre='Événement à valider DGA')
         self.assertEqual(event.statut_validation_dga, 'en_attente')
         self.assertTrue(event.demande_validation_dga)
-        
+
         # Étape 2 : DGA valide l'événement
         self.client.force_login(self.user_dga)
         validation_data = {
@@ -109,7 +109,7 @@ class EventWorkflowDGADGSTest(TestCase):
             validation_data
         )
         self.assertEqual(response.status_code, 302)
-        
+
         # Étape 3 : Vérifier que le statut est mis à jour
         event.refresh_from_db()
         self.assertEqual(event.statut_validation_dga, 'valide')
@@ -120,7 +120,7 @@ class EventWorkflowDGADGSTest(TestCase):
     def test_complete_validation_workflow_dgs(self):
         """
         Test le workflow complet de validation DGS.
-        
+
         Scénario :
         1. Créateur crée un événement avec demande de validation DGS
         2. DGS valide l'événement
@@ -139,12 +139,12 @@ class EventWorkflowDGADGSTest(TestCase):
         }
         response = self.client.post(reverse('events:create'), data)
         self.assertEqual(response.status_code, 302)
-        
+
         # Récupérer l'événement créé
         event = Event.objects.get(titre='Événement à valider DGS')
         self.assertEqual(event.statut_validation_dgs, 'en_attente')
         self.assertTrue(event.demande_validation_dgs)
-        
+
         # Étape 2 : DGS valide l'événement
         self.client.force_login(self.user_dgs)
         validation_data = {
@@ -157,7 +157,7 @@ class EventWorkflowDGADGSTest(TestCase):
             validation_data
         )
         self.assertEqual(response.status_code, 302)
-        
+
         # Étape 3 : Vérifier que le statut est mis à jour
         event.refresh_from_db()
         self.assertEqual(event.statut_validation_dgs, 'valide')
@@ -168,7 +168,7 @@ class EventWorkflowDGADGSTest(TestCase):
     def test_validation_refusal_workflow(self):
         """
         Test le workflow de refus de validation.
-        
+
         Scénario :
         1. Créateur crée un événement avec demande de validation DGA
         2. DGA refuse l'événement
@@ -185,9 +185,9 @@ class EventWorkflowDGADGSTest(TestCase):
         }
         response = self.client.post(reverse('events:create'), data)
         self.assertEqual(response.status_code, 302)
-        
+
         event = Event.objects.get(titre='Événement refusé')
-        
+
         # Étape 2 : DGA refuse l'événement
         self.client.force_login(self.user_dga)
         validation_data = {
@@ -200,7 +200,7 @@ class EventWorkflowDGADGSTest(TestCase):
             validation_data
         )
         self.assertEqual(response.status_code, 302)
-        
+
         # Étape 3 : Vérifier que le statut global est 'refuse'
         event.refresh_from_db()
         self.assertEqual(event.statut_validation_dga, 'refuse')
@@ -214,7 +214,7 @@ class EventWorkflowDGADGSTest(TestCase):
         self.client.force_login(self.user_communication)
         response = self.client.get(reverse('events:stats'))
         self.assertEqual(response.status_code, 200)
-        
+
         # Test avec créateur (non autorisé)
         self.client.force_login(self.user_creator)
         response = self.client.get(reverse('events:stats'))
@@ -236,7 +236,7 @@ class EventWorkflowDGADGSTest(TestCase):
         }
         self.client.post(reverse('events:create'), data)
         event = Event.objects.get(titre='Événement DGA')
-        
+
         # Tenter de valider avec DGS (ne devrait pas pouvoir)
         self.client.force_login(self.user_dgs)
         validation_data = {
@@ -249,7 +249,7 @@ class EventWorkflowDGADGSTest(TestCase):
         )
         # Devrait rediriger avec un message d'erreur
         self.assertEqual(response.status_code, 302)
-        
+
         # Vérifier que le statut n'a pas changé
         event.refresh_from_db()
         self.assertEqual(event.statut_validation_dga, 'en_attente')
@@ -269,12 +269,11 @@ class EventWorkflowDGADGSTest(TestCase):
             demande_validation_dga=True,
             statut_validation_dga='en_attente'
         )
-        
+
         # Accéder à la vue mes événements
         response = self.client.get(reverse('events:my_events'))
         self.assertEqual(response.status_code, 200)
-        
+
         # Vérifier que l'événement est dans la liste
         events_in_context = response.context['events']
         self.assertIn(event, events_in_context)
-

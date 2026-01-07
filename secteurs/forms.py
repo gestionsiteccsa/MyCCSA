@@ -120,7 +120,7 @@ class UserSecteursForm(forms.Form):
         """
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        
+
         if user:
             # Pré-sélectionner les secteurs de l'utilisateur
             self.fields['secteurs'].initial = user.secteurs.all()
@@ -138,4 +138,3 @@ class UserSecteursForm(forms.Form):
         secteurs = self.cleaned_data.get('secteurs', [])
         # Filtrer les valeurs vides (déjà fait par ModelMultipleChoiceField, mais on s'assure)
         return secteurs
-

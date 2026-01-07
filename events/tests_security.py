@@ -21,12 +21,12 @@ User = get_user_model()
 def create_test_image(filename='test.png', size=(100, 100), format='PNG'):
     """
     Crée une image de test.
-    
+
     Args:
         filename: Nom du fichier
         size: Taille de l'image (width, height)
         format: Format de l'image (PNG, JPEG, etc.)
-    
+
     Returns:
         SimpleUploadedFile: Fichier image pour les tests
     """
@@ -44,10 +44,10 @@ def create_test_image(filename='test.png', size=(100, 100), format='PNG'):
 def create_fake_pdf(filename='fake.pdf'):
     """
     Crée un faux fichier PDF pour tester la validation.
-    
+
     Args:
         filename: Nom du fichier
-    
+
     Returns:
         SimpleUploadedFile: Fichier pour les tests
     """
@@ -79,7 +79,7 @@ class EventFileFormSecurityTest(TestCase):
     def test_validation_mime_type_image_real_content(self):
         """
         Test que la validation vérifie le contenu réel de l'image, pas seulement le MIME.
-        
+
         Vérifie que Pillow peut ouvrir et valider l'image.
         """
         # Créer une vraie image PNG
@@ -87,7 +87,7 @@ class EventFileFormSecurityTest(TestCase):
         # Créer une instance EventFile pour le formulaire
         event_file = EventFile(event=self.event, ordre=0)
         form = EventFileForm({'ordre': 0}, {'fichier': image_file}, instance=event_file)
-        
+
         # Le formulaire devrait être valide pour le fichier
         # (même si l'instance complète ne peut pas être sauvegardée sans event)
         self.assertTrue(form.is_valid())
@@ -95,14 +95,14 @@ class EventFileFormSecurityTest(TestCase):
     def test_validation_mime_type_fake_pdf(self):
         """
         Test que la validation détecte un faux PDF (falsification du content_type).
-        
+
         Un fichier avec content_type='application/pdf' mais qui n'est pas un vrai PDF
         devrait être rejeté.
         """
         # Créer un faux PDF (fichier texte avec content_type PDF)
         fake_pdf = create_fake_pdf('fake.pdf')
         form = EventFileForm({}, {'fichier': fake_pdf})
-        
+
         # Le formulaire devrait être invalide car le fichier n'est pas un vrai PDF
         self.assertFalse(form.is_valid())
         self.assertIn('fichier', form.errors)
@@ -119,7 +119,7 @@ class EventFileFormSecurityTest(TestCase):
             content_type='image/png'
         )
         form = EventFileForm({}, {'fichier': large_file})
-        
+
         # Le formulaire devrait être invalide
         self.assertFalse(form.is_valid())
         self.assertIn('fichier', form.errors)
@@ -138,7 +138,7 @@ class EventFileFormSecurityTest(TestCase):
             content_type='application/x-msdownload'  # Type EXE
         )
         form = EventFileForm({}, {'fichier': forbidden_file})
-        
+
         # Le formulaire devrait être invalide
         self.assertFalse(form.is_valid())
         self.assertIn('fichier', form.errors)
@@ -158,7 +158,7 @@ class EventFileFormSecurityTest(TestCase):
             content_type='image/png'
         )
         form = EventFileForm({}, {'fichier': corrupted_file})
-        
+
         # Le formulaire devrait être invalide
         self.assertFalse(form.is_valid())
         self.assertIn('fichier', form.errors)
@@ -196,15 +196,15 @@ class EventViewSecurityTest(TestCase):
     def test_rate_limiting_uploads(self):
         """
         Test que le rate limiting fonctionne pour les uploads.
-        
+
         Après avoir uploadé MAX_UPLOADS fichiers, les uploads suivants
         devraient être bloqués.
         """
         from .constants import RATE_LIMIT_UPLOADS_PER_MINUTE
-        
+
         # Vider le cache avant le test
         cache.clear()
-        
+
         # Uploader plusieurs fichiers rapidement
         for i in range(RATE_LIMIT_UPLOADS_PER_MINUTE + 1):
             image_file = create_test_image(f'test_{i}.png')
@@ -215,9 +215,9 @@ class EventViewSecurityTest(TestCase):
                 'adresse_ville': 'Paris',
             }
             files = {'images': [image_file]}
-            
+
             response = self.client.post(reverse('events:create'), data, files=files)
-            
+
             if i < RATE_LIMIT_UPLOADS_PER_MINUTE:
                 # Les premiers uploads devraient réussir
                 self.assertIn(response.status_code, [200, 302])
@@ -228,7 +228,7 @@ class EventViewSecurityTest(TestCase):
     def test_file_size_validation_in_view(self):
         """
         Test que la validation de taille est effectuée dans la vue également.
-        
+
         Même si le formulaire passe, la vue devrait vérifier la taille.
         """
         # Créer un fichier trop volumineux
@@ -238,7 +238,7 @@ class EventViewSecurityTest(TestCase):
             large_content,
             content_type='image/png'
         )
-        
+
         data = {
             'titre': 'Test Event',
             'date_debut': (timezone.now() + timezone.timedelta(days=1)).strftime('%Y-%m-%dT%H:%M'),
@@ -246,9 +246,9 @@ class EventViewSecurityTest(TestCase):
             'adresse_ville': 'Paris',
         }
         files = {'images': [large_file]}
-        
-        response = self.client.post(reverse('events:create'), data, files=files)
-        
+
+        self.client.post(reverse('events:create'), data, files=files)
+
         # La vue devrait rejeter le fichier trop volumineux
         # Le formulaire devrait rejeter le fichier avant même d'arriver à la validation de la vue
         # Donc on vérifie que l'événement n'a pas été créé
@@ -261,17 +261,17 @@ class EventViewSecurityTest(TestCase):
         # Créer un client sans CSRF
         csrf_client = Client(enforce_csrf_checks=True)
         csrf_client.force_login(self.user)
-        
+
         data = {
             'titre': 'Test Event',
             'date_debut': (timezone.now() + timezone.timedelta(days=1)).strftime('%Y-%m-%dT%H:%M'),
             'timezone': 'Europe/Paris',
             'adresse_ville': 'Paris',
         }
-        
+
         # Tenter de créer un événement sans token CSRF
         response = csrf_client.post(reverse('events:create'), data)
-        
+
         # Devrait échouer avec une erreur CSRF (403)
         self.assertEqual(response.status_code, 403)
 
@@ -285,16 +285,16 @@ class EventViewSecurityTest(TestCase):
             password='testpass123'
         )
         self.client.force_login(unauthorized_user)
-        
+
         data = {
             'titre': 'Test Event',
             'date_debut': (timezone.now() + timezone.timedelta(days=1)).strftime('%Y-%m-%dT%H:%M'),
             'timezone': 'Europe/Paris',
             'adresse_ville': 'Paris',
         }
-        
+
         response = self.client.post(reverse('events:create'), data)
-        
+
         # Devrait rediriger vers la page de connexion ou retourner 403
         self.assertIn(response.status_code, [302, 403])
 
@@ -317,7 +317,7 @@ class EventViewSecurityTest(TestCase):
         )
         other_user.user_permissions.add(permission)
         self.client.force_login(other_user)
-        
+
         # Tenter de modifier l'événement créé par self.user
         data = {
             'titre': 'Modified Event',
@@ -325,13 +325,12 @@ class EventViewSecurityTest(TestCase):
             'timezone': 'Europe/Paris',
             'adresse_ville': 'Paris',
         }
-        
+
         response = self.client.post(
             reverse('events:update', kwargs={'pk': self.event.pk}),
             data
         )
-        
+
         # Devrait rediriger vers la page de détail avec un message d'erreur
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('events:detail', kwargs={'pk': self.event.pk}))
-

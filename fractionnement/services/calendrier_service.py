@@ -26,7 +26,7 @@ def get_jours_feries_list(annee: int) -> List[Dict[str, Any]]:
         List[Dict[str, Any]]: Liste des jours fériés avec date et nom
     """
     jours_feries = get_jours_feries(annee)
-    
+
     # Noms des jours fériés
     noms_feries = {
         1: "Jour de l'an",
@@ -37,7 +37,7 @@ def get_jours_feries_list(annee: int) -> List[Dict[str, Any]]:
         11: "Toussaint",
         25: "Noël",
     }
-    
+
     result = []
     for jour_ferie in jours_feries:
         nom = noms_feries.get(jour_ferie.day, "Jour férié")
@@ -52,13 +52,13 @@ def get_jours_feries_list(annee: int) -> List[Dict[str, Any]]:
             nom = "Ascension"
         elif jour_ferie.month == 5 and jour_ferie.day > 20:
             nom = "Lundi de Pentecôte"
-        
+
         result.append({
             'date': jour_ferie.isoformat(),
             'nom': nom,
             'type': 'ferie',
         })
-    
+
     return result
 
 
@@ -73,7 +73,7 @@ def get_vacances_zone_b_list(annee: int) -> List[Dict[str, Any]]:
         List[Dict[str, Any]]: Liste des périodes de vacances
     """
     vacances = get_vacances_zone_b(annee)
-    
+
     result = []
     for date_debut, date_fin, nom in vacances:
         result.append({
@@ -82,7 +82,7 @@ def get_vacances_zone_b_list(annee: int) -> List[Dict[str, Any]]:
             'nom': nom,
             'type': 'vacance',
         })
-    
+
     return result
 
 
@@ -104,12 +104,12 @@ def get_periodes_conges_user(user: User, annee: int) -> List[Dict[str, Any]]:
     ).values(
         'id', 'date_debut', 'date_fin', 'type_conge', 'nb_jours'
     ).order_by('date_debut')
-    
+
     result = []
     for periode in periodes:
         # Déterminer si la période est dans la période principale
         dans_periode_principale = est_dans_periode_principale(periode['date_debut'])
-        
+
         result.append({
             'id': periode['id'],
             'date_debut': periode['date_debut'].isoformat(),
@@ -119,7 +119,7 @@ def get_periodes_conges_user(user: User, annee: int) -> List[Dict[str, Any]]:
             'dans_periode_principale': dans_periode_principale,
             'type': 'conge',
         })
-    
+
     return result
 
 
@@ -140,8 +140,3 @@ def get_calendrier_data(user: User, annee: int) -> Dict[str, Any]:
         'vacances_zone_b': get_vacances_zone_b_list(annee),
         'periodes_conges': get_periodes_conges_user(user, annee),
     }
-
-
-
-
-

@@ -113,15 +113,3 @@ class UserSecteursFormTest(TestCase):
         secteurs = list(form.fields['secteurs'].queryset)
         self.assertEqual(secteurs[0].nom, 'SANTÉ')
         self.assertEqual(secteurs[1].nom, 'RURALITÉ')
-
-
-
-
-
-
-
-
-
-
-
-

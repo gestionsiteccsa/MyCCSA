@@ -10,6 +10,7 @@ from ..services.calcul_service import compter_jours_periode, get_jours_hors_peri
 
 User = get_user_model()
 
+
 class DemiJourneesTest(TestCase):
     """
     Tests pour vérifier le calcul des demi-journées.
@@ -65,8 +66,8 @@ class DemiJourneesTest(TestCase):
 
     def test_compter_jours_periode_apres_midi_matin_lendemain(self):
         """Test: Lundi Après-midi au Mardi Matin = 1 jour."""
-        d1 = date(2024, 7, 1) # Lundi
-        d2 = date(2024, 7, 2) # Mardi
+        d1 = date(2024, 7, 1)  # Lundi
+        d2 = date(2024, 7, 2)  # Mardi
         nb_jours = compter_jours_periode(
             d1, d2, 'ouvres', True, 2024,
             debut_type='apres_midi', fin_type='matin'
@@ -75,8 +76,8 @@ class DemiJourneesTest(TestCase):
 
     def test_compter_jours_periode_apres_midi_apres_midi_lendemain(self):
         """Test: Lundi Après-midi au Mardi Après-midi = 1.5 jours."""
-        d1 = date(2024, 7, 1) # Lundi
-        d2 = date(2024, 7, 2) # Mardi
+        d1 = date(2024, 7, 1)  # Lundi
+        d2 = date(2024, 7, 2)  # Mardi
         nb_jours = compter_jours_periode(
             d1, d2, 'ouvres', True, 2024,
             debut_type='apres_midi', fin_type='apres_midi'
@@ -97,11 +98,11 @@ class DemiJourneesTest(TestCase):
             annee_civile=2024,
             nb_jours=Decimal('4.5')
         )
-        
+
         jours_hors = get_jours_hors_periode_principale(self.user, 2024)
         # get_jours_hors_periode_principale retourne int (partie entière)
         self.assertEqual(jours_hors, 4)
-        
+
         # Ajouter 0.5 jour pour arriver à 5 jours
         # Vendredi 8 nov (Après-midi) au Vendredi 8 nov (Après-midi) = 0.5 jour
         PeriodeConge.objects.create(
@@ -114,6 +115,6 @@ class DemiJourneesTest(TestCase):
             annee_civile=2024,
             nb_jours=Decimal('0.5')
         )
-        
+
         jours_hors = get_jours_hors_periode_principale(self.user, 2024)
         self.assertEqual(jours_hors, 5)

@@ -39,4 +39,3 @@ ALLOWED_TIMEZONES = [
 
 # Durée du cache pour les statistiques (en secondes)
 CACHE_DURATION_STATS = 60 * 10  # 10 minutes
-

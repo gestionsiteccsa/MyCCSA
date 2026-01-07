@@ -1,13 +1,1 @@
 # Application Events
-
-
-
-
-
-
-
-
-
-
-
-

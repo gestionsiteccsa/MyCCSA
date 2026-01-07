@@ -44,7 +44,7 @@ class RoleModelTest(TestCase):
 
     def test_role_ordering(self):
         """Test l'ordre de tri des rôles."""
-        role2 = Role.objects.create(
+        Role.objects.create(
             nom='Autre Role',
             niveau=3
         )
@@ -358,12 +358,3 @@ class RoleSecurityTest(TestCase):
         # L'utilisateur existe toujours mais son rôle est null
         self.assertIsNone(self.user.role)
         self.assertTrue(User.objects.filter(pk=self.user.pk).exists())
-
-
-
-
-
-
-
-
-

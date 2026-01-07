@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "whitenoise.runserver_nostatic",
+    "app",  # Pour les commandes de management
     "home",
     "accounts",
     "secteurs",

@@ -125,7 +125,7 @@ class UserRoleForm(forms.Form):
         """
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        
+
         if user:
             # Pré-sélectionner le rôle de l'utilisateur
             self.fields['role'].initial = user.role
@@ -142,12 +142,3 @@ class UserRoleForm(forms.Form):
         """
         role = self.cleaned_data.get('role')
         return role
-
-
-
-
-
-
-
-
-
