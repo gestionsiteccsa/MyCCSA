@@ -118,4 +118,3 @@ class UserSecteursFormTest(TestCase):
         # Vérifier que l'ordre est respecté
         for i in range(len(secteurs) - 1):
             self.assertLessEqual(secteurs[i].ordre, secteurs[i + 1].ordre)
-
