@@ -20,10 +20,12 @@ class CSRFProtectionTest(TestCase):
             email='admin@example.com',
             password='adminpass123'
         )
-        self.secteur = Secteur.objects.create(
-            nom='SANTÉ',
-            couleur='#b4c7e7',
-            ordre=1
+        self.secteur, _ = Secteur.objects.get_or_create(
+            nom='TEST_CSRF',
+            defaults={
+                'couleur': '#b4c7e7',
+                'ordre': 999
+            }
         )
 
     def test_csrf_protection_create(self):
@@ -87,10 +89,12 @@ class PermissionsTest(TestCase):
             email='user@example.com',
             password='userpass123'
         )
-        self.secteur = Secteur.objects.create(
-            nom='SANTÉ',
-            couleur='#b4c7e7',
-            ordre=1
+        self.secteur, _ = Secteur.objects.get_or_create(
+            nom='TEST_PERMISSIONS',
+            defaults={
+                'couleur': '#b4c7e7',
+                'ordre': 998
+            }
         )
 
     def test_anonymous_user_redirected(self):
@@ -217,10 +221,12 @@ class InputValidationTest(TestCase):
 
     def test_mass_assignment_protection(self):
         """Test que les champs non autorisés ne peuvent pas être modifiés."""
-        secteur = Secteur.objects.create(
-            nom='ORIGINAL',
-            couleur='#000000',
-            ordre=1
+        secteur, _ = Secteur.objects.get_or_create(
+            nom='TEST_MASS_ASSIGNMENT',
+            defaults={
+                'couleur': '#000000',
+                'ordre': 997
+            }
         )
 
         # Tentative de modifier un champ non présent dans le formulaire
