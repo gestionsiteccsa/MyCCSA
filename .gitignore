@@ -73,7 +73,6 @@ celerybeat-schedule
 celerybeat.pid
 
 # Logs
-logs/
 *.log
 
 # Cache
