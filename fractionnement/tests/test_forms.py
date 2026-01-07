@@ -167,7 +167,9 @@ class PeriodeCongeFormTest(TestCase):
         """Test formulaire avec données valides."""
         form = PeriodeCongeForm({
             'date_debut': '2024-07-01',
+            'debut_type': 'matin',
             'date_fin': '2024-07-15',
+            'fin_type': 'apres_midi',
             'type_conge': 'annuel',
         }, user=self.user)
 
@@ -177,7 +179,9 @@ class PeriodeCongeFormTest(TestCase):
         """Test validation date_fin < date_debut."""
         form = PeriodeCongeForm({
             'date_debut': '2024-07-15',
+            'debut_type': 'matin',
             'date_fin': '2024-07-01',
+            'fin_type': 'apres_midi',
             'type_conge': 'annuel',
         }, user=self.user)
 
@@ -188,7 +192,9 @@ class PeriodeCongeFormTest(TestCase):
         """Test que le formulaire calcule automatiquement l'année civile."""
         form = PeriodeCongeForm({
             'date_debut': '2024-07-01',
+            'debut_type': 'matin',
             'date_fin': '2024-07-15',
+            'fin_type': 'apres_midi',
             'type_conge': 'annuel',
         }, user=self.user)
 
@@ -200,7 +206,9 @@ class PeriodeCongeFormTest(TestCase):
         """Test que le formulaire calcule automatiquement le nombre de jours."""
         form = PeriodeCongeForm({
             'date_debut': '2024-07-01',
+            'debut_type': 'matin',
             'date_fin': '2024-07-15',
+            'fin_type': 'apres_midi',
             'type_conge': 'annuel',
         }, user=self.user)
 
@@ -218,7 +226,9 @@ class PeriodeCongeFormTest(TestCase):
 
         form = PeriodeCongeForm({
             'date_debut': '2024-07-01',
+            'debut_type': 'matin',
             'date_fin': '2024-07-15',
+            'fin_type': 'apres_midi',
             'type_conge': 'annuel',
         }, user=self.user)
 
@@ -239,7 +249,9 @@ class PeriodeCongeFormTest(TestCase):
 
         form = PeriodeCongeForm({
             'date_debut': '2024-07-01',
+            'debut_type': 'matin',
             'date_fin': '2024-07-15',
+            'fin_type': 'apres_midi',
             'type_conge': 'annuel',
         }, user=self.user)
 

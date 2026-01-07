@@ -205,7 +205,9 @@ class PeriodeViewsTest(TestCase):
         """Test création d'une période avec données valides."""
         data = {
             'date_debut': '2024-07-01',
+            'debut_type': 'matin',
             'date_fin': '2024-07-15',
+            'fin_type': 'apres_midi',
             'type_conge': 'annuel',
         }
         response = self.client.post(reverse('fractionnement:periode_create'), data)
@@ -221,7 +223,9 @@ class PeriodeViewsTest(TestCase):
         """Test création d'une période avec date_fin < date_debut."""
         data = {
             'date_debut': '2024-07-15',
+            'debut_type': 'matin',
             'date_fin': '2024-07-01',  # Invalide
+            'fin_type': 'apres_midi',
             'type_conge': 'annuel',
         }
         response = self.client.post(reverse('fractionnement:periode_create'), data)
@@ -319,7 +323,9 @@ class PeriodeViewsTest(TestCase):
 
         data = {
             'date_debut': '2024-07-01',
+            'debut_type': 'matin',
             'date_fin': '2024-07-20',
+            'fin_type': 'apres_midi',
             'type_conge': 'annuel',
         }
         response = self.client.post(reverse('fractionnement:periode_update', args=[periode.pk]), data)
