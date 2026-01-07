@@ -49,3 +49,4 @@ class Role(models.Model):
             str: Nom du rôle
         """
         return self.nom
+

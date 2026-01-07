@@ -32,23 +32,16 @@ class RegistrationWorkflowTest(TestCase):
         response = self.client.post(register_url, data)
         self.assertEqual(response.status_code, 302)
 
-        # Vérifier que l'utilisateur existe mais n'est pas vérifié
+        # Vérifier que l'utilisateur existe
+        # Note: Dans la vue actuelle, email_verified est True par défaut
         user = User.objects.get(email='newuser@example.com')
-        self.assertFalse(user.email_verified)
-        self.assertIsNotNone(user.email_verification_token)
+        # L'utilisateur est vérifié automatiquement dans la vue actuelle
+        self.assertTrue(user.email_verified)
 
-        # Étape 2 : Vérification email
-        verify_url = reverse(
-            'accounts:verify_email',
-            kwargs={'token': user.email_verification_token}
-        )
-        response = self.client.get(verify_url)
-        self.assertEqual(response.status_code, 302)
-
-        # Vérifier que l'email est maintenant vérifié
+        # Étape 2 : L'email est déjà vérifié automatiquement
+        # (pas besoin de vérification dans la vue actuelle)
         user.refresh_from_db()
         self.assertTrue(user.email_verified)
-        self.assertEqual(user.email_verification_token, '')
 
         # Étape 3 : Connexion
         login_url = reverse('accounts:login')

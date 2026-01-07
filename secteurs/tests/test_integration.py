@@ -76,15 +76,13 @@ class UserSecteursIntegrationTest(TestCase):
             first_name='John',
             last_name='Doe'
         )
-        self.secteur1 = Secteur.objects.create(
-            nom='SANTÉ',
-            couleur='#b4c7e7',
-            ordre=1
+        self.secteur1, _ = Secteur.objects.get_or_create(
+            nom='SANTÉ_TEST_INTEGRATION',
+            defaults={'couleur': '#b4c7e7', 'ordre': 105}
         )
-        self.secteur2 = Secteur.objects.create(
-            nom='RURALITÉ',
-            couleur='#005b24',
-            ordre=2
+        self.secteur2, _ = Secteur.objects.get_or_create(
+            nom='RURALITÉ_TEST_INTEGRATION',
+            defaults={'couleur': '#005b24', 'ordre': 106}
         )
         self.client.login(email='admin@example.com', password='adminpass123')
 
@@ -135,3 +133,4 @@ class UserSecteursIntegrationTest(TestCase):
         self.assertEqual(self.user.secteurs.count(), 1)
         self.assertNotIn(self.secteur1, self.user.secteurs.all())
         self.assertIn(self.secteur2, self.user.secteurs.all())
+

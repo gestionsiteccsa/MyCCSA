@@ -161,7 +161,7 @@ class UserProfileEditFormTest(TestCase):
             'first_name': 'New',
             'last_name': 'Name',
         }
-        form = UserProfileEditForm(data=form_data, user=self.user)
+        form = UserProfileEditForm(data=form_data, instance=self.user, user=self.user)
         self.assertTrue(form.is_valid())
 
 

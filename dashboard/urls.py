@@ -9,3 +9,4 @@ app_name = 'dashboard'
 urlpatterns = [
     path('', views.dashboard_view, name='index'),
 ]
+

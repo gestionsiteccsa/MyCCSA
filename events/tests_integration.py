@@ -20,10 +20,12 @@ class EventWorkflowDGADGSTest(TestCase):
         """Configuration initiale."""
         self.client = Client()
 
-        # Créer les rôles (avec niveau requis)
-        self.role_dga = Role.objects.create(nom='DGA', niveau=3)
-        self.role_dgs = Role.objects.create(nom='DGS', niveau=4)
-        self.role_communication = Role.objects.create(nom='Chargé de communication', niveau=2)
+        # Créer les rôles (avec niveau requis) - utiliser get_or_create pour éviter les conflits
+        self.role_dga, _ = Role.objects.get_or_create(nom='DGA_TEST', defaults={'niveau': 3})
+        self.role_dgs, _ = Role.objects.get_or_create(nom='DGS_TEST', defaults={'niveau': 4})
+        self.role_communication, _ = Role.objects.get_or_create(
+            nom='Chargé de communication TEST', defaults={'niveau': 2}
+        )
 
         # Créer les utilisateurs
         self.user_creator = User.objects.create_user(

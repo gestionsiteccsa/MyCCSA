@@ -96,10 +96,9 @@ class UserSecteursFormTest(TestCase):
                 'ordre': 1
             }
         )
-        self.secteur2 = Secteur.objects.create(
-            nom='RURALITÉ',
-            couleur='#005b24',
-            ordre=2
+        self.secteur2, _ = Secteur.objects.get_or_create(
+            nom='RURALITÉ_TEST_FORMS',
+            defaults={'couleur': '#005b24', 'ordre': 2}
         )
 
     def test_form_initial_with_user_secteurs(self):

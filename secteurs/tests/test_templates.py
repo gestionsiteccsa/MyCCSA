@@ -20,10 +20,9 @@ class ListTemplateTest(TestCase):
             email='admin@example.com',
             password='adminpass123'
         )
-        self.secteur = Secteur.objects.create(
-            nom='SANTÉ',
-            couleur='#b4c7e7',
-            ordre=1
+        self.secteur, _ = Secteur.objects.get_or_create(
+            nom='SANTÉ_TEST_TEMPLATES',
+            defaults={'couleur': '#b4c7e7', 'ordre': 107}
         )
         self.client.login(email='admin@example.com', password='adminpass123')
 

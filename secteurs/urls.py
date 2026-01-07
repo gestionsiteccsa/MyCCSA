@@ -14,3 +14,4 @@ urlpatterns = [
     path('users/', views.user_list_view, name='user_list'),
     path('users/<int:user_id>/secteurs/', views.user_secteurs_view, name='user_secteurs'),
 ]
+

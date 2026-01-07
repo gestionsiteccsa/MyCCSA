@@ -15,10 +15,12 @@ class SecteurModelTest(TestCase):
     """
     def setUp(self):
         """Configuration initiale."""
-        self.secteur = Secteur.objects.create(
-            nom='SANTÉ',
-            couleur='#b4c7e7',
-            ordre=1
+        self.secteur, _ = Secteur.objects.get_or_create(
+            nom='SANTÉ_TEST_MODELS',
+            defaults={
+                'couleur': '#b4c7e7',
+                'ordre': 100
+            }
         )
 
     def test_secteur_str(self):
@@ -29,30 +31,28 @@ class SecteurModelTest(TestCase):
         """Test que le nom du secteur doit être unique."""
         with self.assertRaises(Exception):
             Secteur.objects.create(
-                nom='SANTÉ',
+                nom='SANTÉ_TEST_MODELS',  # Utiliser le même nom que dans setUp
                 couleur='#ff0000',
                 ordre=2
             )
 
     def test_secteur_ordre_default(self):
         """Test que l'ordre par défaut est 0."""
-        secteur = Secteur.objects.create(
-            nom='NOUVEAU',
-            couleur='#000000'
+        secteur, _ = Secteur.objects.get_or_create(
+            nom='NOUVEAU_TEST_MODELS',
+            defaults={'couleur': '#000000'}
         )
         self.assertEqual(secteur.ordre, 0)
 
     def test_secteur_ordering(self):
         """Test l'ordre de tri des secteurs."""
-        Secteur.objects.create(
-            nom='RURALITÉ',
-            couleur='#005b24',
-            ordre=2
+        secteur1, _ = Secteur.objects.get_or_create(
+            nom='RURALITÉ_TEST_ORDERING',
+            defaults={'couleur': '#005b24', 'ordre': 2}
         )
-        Secteur.objects.create(
-            nom='AUTRE',
-            couleur='#ff0000',
-            ordre=1
+        secteur2, _ = Secteur.objects.get_or_create(
+            nom='AUTRE_TEST_ORDERING',
+            defaults={'couleur': '#ff0000', 'ordre': 1}
         )
 
         secteurs = list(Secteur.objects.all())
@@ -71,15 +71,13 @@ class UserSecteursRelationTest(TestCase):
             email='test@example.com',
             password='testpass123'
         )
-        self.secteur1 = Secteur.objects.create(
-            nom='SANTÉ',
-            couleur='#b4c7e7',
-            ordre=1
+        self.secteur1, _ = Secteur.objects.get_or_create(
+            nom='SANTÉ_TEST_RELATION',
+            defaults={'couleur': '#b4c7e7', 'ordre': 1}
         )
-        self.secteur2 = Secteur.objects.create(
-            nom='RURALITÉ',
-            couleur='#005b24',
-            ordre=2
+        self.secteur2, _ = Secteur.objects.get_or_create(
+            nom='RURALITÉ_TEST_RELATION',
+            defaults={'couleur': '#005b24', 'ordre': 2}
         )
 
     def test_user_add_secteur(self):

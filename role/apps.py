@@ -11,3 +11,4 @@ class RoleConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'role'
     verbose_name = 'Rôles'
+

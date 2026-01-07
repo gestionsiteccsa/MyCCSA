@@ -168,10 +168,12 @@ class FractionnementPerformanceTest(TestCase):
 
         # Créer 50 périodes
         for i in range(50):
+            day_start = 1 + (i % 28)  # Max 28 pour éviter les problèmes de fin de mois
+            day_end = min(day_start + 4, 28)  # S'assurer que date_fin <= 28
             PeriodeConge.objects.create(
                 user=self.user,
-                date_debut=date(2024, 1, 1 + (i % 30)),
-                date_fin=date(2024, 1, 5 + (i % 30)),
+                date_debut=date(2024, 1, day_start),
+                date_fin=date(2024, 1, day_end),
                 type_conge='annuel',
                 annee_civile=2024,
                 nb_jours=4

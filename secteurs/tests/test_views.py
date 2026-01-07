@@ -25,10 +25,9 @@ class SecteurListViewTest(TestCase):
             email='user@example.com',
             password='userpass123'
         )
-        self.secteur = Secteur.objects.create(
-            nom='SANTÉ',
-            couleur='#b4c7e7',
-            ordre=1
+        self.secteur, _ = Secteur.objects.get_or_create(
+            nom='SANTÉ_TEST_VIEWS_LIST',
+            defaults={'couleur': '#b4c7e7', 'ordre': 100}
         )
 
     def test_list_view_requires_superuser(self):
@@ -210,10 +209,9 @@ class SecteurUpdateViewTest(TestCase):
             email='admin@example.com',
             password='adminpass123'
         )
-        self.secteur = Secteur.objects.create(
-            nom='SANTÉ',
-            couleur='#b4c7e7',
-            ordre=1
+        self.secteur, _ = Secteur.objects.get_or_create(
+            nom='SANTÉ_TEST_VIEWS_UPDATE',
+            defaults={'couleur': '#b4c7e7', 'ordre': 101}
         )
 
     def test_update_view_get(self):
@@ -252,10 +250,9 @@ class SecteurDeleteViewTest(TestCase):
             email='admin@example.com',
             password='adminpass123'
         )
-        self.secteur = Secteur.objects.create(
-            nom='SANTÉ',
-            couleur='#b4c7e7',
-            ordre=1
+        self.secteur, _ = Secteur.objects.get_or_create(
+            nom='SANTÉ_TEST_VIEWS_DELETE',
+            defaults={'couleur': '#b4c7e7', 'ordre': 102}
         )
 
     def test_delete_view_get(self):
@@ -292,15 +289,13 @@ class UserSecteursViewTest(TestCase):
             email='user@example.com',
             password='userpass123'
         )
-        self.secteur1 = Secteur.objects.create(
-            nom='SANTÉ',
-            couleur='#b4c7e7',
-            ordre=1
+        self.secteur1, _ = Secteur.objects.get_or_create(
+            nom='SANTÉ_TEST_VIEWS_USER',
+            defaults={'couleur': '#b4c7e7', 'ordre': 103}
         )
-        self.secteur2 = Secteur.objects.create(
-            nom='RURALITÉ',
-            couleur='#005b24',
-            ordre=2
+        self.secteur2, _ = Secteur.objects.get_or_create(
+            nom='RURALITÉ_TEST_VIEWS_USER',
+            defaults={'couleur': '#005b24', 'ordre': 104}
         )
 
     def test_user_secteurs_view_get(self):

@@ -7,7 +7,7 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
-from .models import CycleHebdomadaire, PeriodeConge, ParametresAnnee, CalculFractionnement
+from fractionnement.models import CycleHebdomadaire, PeriodeConge, ParametresAnnee, CalculFractionnement
 from .services.calcul_service import (
     calculer_rtt_annuels,
     calculer_conges_annuels,

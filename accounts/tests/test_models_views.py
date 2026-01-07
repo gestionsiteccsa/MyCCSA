@@ -5,7 +5,7 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils import timezone
-from .utils import (
+from accounts.utils import (
     generate_verification_token,
     generate_password_reset_token,
     is_verification_token_valid,

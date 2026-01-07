@@ -54,3 +54,4 @@ class Secteur(models.Model):
             str: Nom du secteur
         """
         return self.nom
+

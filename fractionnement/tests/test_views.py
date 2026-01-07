@@ -443,10 +443,9 @@ class APICalendrierDataTest(TestCase):
 
     def test_api_calendrier_data_invalid(self):
         """Test API avec année invalide."""
-        response = self.client.get(reverse('fractionnement:api_calendrier_data', args=['invalid']))
-        self.assertEqual(response.status_code, 400)
-        data = response.json()
-        self.assertIn('error', data)
+        # Utiliser directement l'URL car reverse() ne fonctionne pas avec des arguments non-numériques
+        response = self.client.get('/fractionnement/api/calendrier/invalid/')
+        self.assertEqual(response.status_code, 404)  # Django retourne 404 pour URL non matchée
 
     def test_api_calendrier_data_requires_login(self):
         """Test que l'API nécessite une authentification."""
@@ -492,10 +491,9 @@ class APICalculFractionnementTest(TestCase):
 
     def test_api_calcul_fractionnement_invalid(self):
         """Test API avec année invalide."""
-        response = self.client.get(reverse('fractionnement:api_calcul_fractionnement', args=['invalid']))
-        self.assertEqual(response.status_code, 400)
-        data = response.json()
-        self.assertIn('error', data)
+        # Utiliser directement l'URL car reverse() ne fonctionne pas avec des arguments non-numériques
+        response = self.client.get('/fractionnement/api/calcul/invalid/')
+        self.assertEqual(response.status_code, 404)  # Django retourne 404 pour URL non matchée
 
     def test_api_calcul_fractionnement_requires_login(self):
         """Test que l'API nécessite une authentification."""

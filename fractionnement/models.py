@@ -95,7 +95,9 @@ class CycleHebdomadaire(models.Model):
         """
         super().clean()
 
-        if self.heures_semaine < HEURES_SEMAINE_MIN or self.heures_semaine > HEURES_SEMAINE_MAX:
+        if self.heures_semaine is not None and (
+            self.heures_semaine < HEURES_SEMAINE_MIN or self.heures_semaine > HEURES_SEMAINE_MAX
+        ):
             raise ValidationError({
                 'heures_semaine': _(
                     'Les heures par semaine doivent être entre %(min)s et %(max)s.'
