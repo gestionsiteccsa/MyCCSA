@@ -499,14 +499,17 @@ class EventForm(forms.ModelForm):
         demande_dgs = self.cleaned_data.get('demande_validation_dgs', False)
 
         # Si une nouvelle demande de validation est faite, initialiser le statut à 'en_attente'
-        if demande_dga and not instance.demande_validation_dga:
-            instance.statut_validation_dga = 'en_attente'
-        elif not demande_dga:
+        # Pour une création (instance.pk is None) ou si la demande change
+        if demande_dga:
+            if instance.pk is None or not instance.demande_validation_dga:
+                instance.statut_validation_dga = 'en_attente'
+        else:
             instance.statut_validation_dga = 'non_demande'
 
-        if demande_dgs and not instance.demande_validation_dgs:
-            instance.statut_validation_dgs = 'en_attente'
-        elif not demande_dgs:
+        if demande_dgs:
+            if instance.pk is None or not instance.demande_validation_dgs:
+                instance.statut_validation_dgs = 'en_attente'
+        else:
             instance.statut_validation_dgs = 'non_demande'
 
         instance.demande_validation_dga = demande_dga

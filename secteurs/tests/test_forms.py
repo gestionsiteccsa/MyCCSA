@@ -106,8 +106,9 @@ class UserSecteursFormTest(TestCase):
         self.user.secteurs.add(self.secteur1)
         form = UserSecteursForm(user=self.user)
         initial_secteurs = list(form.fields['secteurs'].initial)
-        self.assertIn(self.secteur1.id, initial_secteurs)
-        self.assertNotIn(self.secteur2.id, initial_secteurs)
+        initial_ids = [s.id for s in initial_secteurs]
+        self.assertIn(self.secteur1.id, initial_ids)
+        self.assertNotIn(self.secteur2.id, initial_ids)
 
     def test_form_secteurs_ordered(self):
         """Test que les secteurs sont ordonnés par ordre puis nom."""

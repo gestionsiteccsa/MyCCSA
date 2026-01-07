@@ -150,14 +150,12 @@ class RegistrationTest(TestCase):
             'password2': 'short',
         }
         response = self.client.post(self.register_url, data)
-        # Le formulaire peut rediriger ou afficher une erreur
-        if response.status_code == 200:
-            form = response.context['form']
-            self.assertFalse(form.is_valid())
-        else:
-            # Si redirection, vérifier que l'utilisateur n'a pas été créé
-            self.assertEqual(response.status_code, 302)
-            self.assertFalse(User.objects.filter(email='newuser@example.com').exists())
+        # Le formulaire doit rejeter le mot de passe court
+        self.assertEqual(response.status_code, 200)
+        form = response.context['form']
+        self.assertFalse(form.is_valid())
+        # Vérifier que l'utilisateur n'a pas été créé
+        self.assertFalse(User.objects.filter(email='newuser@example.com').exists())
 
     def test_register_authenticated_user_redirect(self):
         """Test redirection si utilisateur déjà connecté."""

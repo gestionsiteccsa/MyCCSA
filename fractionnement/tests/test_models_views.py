@@ -22,7 +22,7 @@ from fractionnement.services.calendrier_service import (
     get_vacances_zone_b_list,
     get_periodes_conges_user,
 )
-from .utils import (
+from fractionnement.utils import (
     get_jours_feries,
     est_jour_ouvre,
     est_jour_ouvrable,

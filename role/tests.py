@@ -293,8 +293,8 @@ class RolePerformanceTest(TestCase):
         """Test que la liste des rôles utilise only() pour optimiser."""
         self.client.login(email='admin@example.com', password='adminpass123')
         # Le test vérifie que only() est utilisé, mais annotate() crée des requêtes supplémentaires
-        # pour compter les utilisateurs. On accepte jusqu'à 50 requêtes pour ce test.
-        with self.assertNumQueries(50):  # annotate() crée des requêtes par rôle
+        # pour compter les utilisateurs. On vérifie que le nombre de requêtes est raisonnable.
+        with self.assertNumQueries(35):  # annotate() crée des requêtes par rôle
             response = self.client.get(reverse('role:list'))
             self.assertEqual(response.status_code, 200)
 
@@ -311,8 +311,8 @@ class RolePerformanceTest(TestCase):
             user.role = role
             user.save()
         # Le test vérifie que select_related est utilisé, mais il y a aussi des requêtes
-        # pour la session et l'utilisateur connecté. On accepte jusqu'à 10 requêtes.
-        with self.assertNumQueries(10):  # session + user + users list + pagination
+        # pour la session et l'utilisateur connecté. On vérifie que le nombre est raisonnable.
+        with self.assertNumQueries(4):  # session + user + users list + pagination
             response = self.client.get(reverse('role:user_list'))
             self.assertEqual(response.status_code, 200)
 

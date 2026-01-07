@@ -25,7 +25,7 @@ class EventWorkflowDGADGSTest(TestCase):
         self.role_dga, _ = Role.objects.get_or_create(nom='DGA_TEST', defaults={'niveau': 10})
         self.role_dgs, _ = Role.objects.get_or_create(nom='DGS_TEST', defaults={'niveau': 11})
         self.role_communication, _ = Role.objects.get_or_create(
-            nom='Chargé de communication TEST', defaults={'niveau': 12}
+            nom='Chargé de communication', defaults={'niveau': 12}
         )
 
         # Créer les utilisateurs
