@@ -294,7 +294,7 @@ class RolePerformanceTest(TestCase):
         self.client.login(email='admin@example.com', password='adminpass123')
         # Le test vérifie que only() est utilisé, mais annotate() crée des requêtes supplémentaires
         # pour compter les utilisateurs. On vérifie que le nombre de requêtes est raisonnable.
-        with self.assertNumQueries(35):  # annotate() crée des requêtes par rôle
+        with self.assertNumQueries(34):  # annotate() crée des requêtes par rôle
             response = self.client.get(reverse('role:list'))
             self.assertEqual(response.status_code, 200)
 

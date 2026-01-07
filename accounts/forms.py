@@ -2,7 +2,7 @@
 Formulaires de l'application accounts.
 """
 from django import forms
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, password_validation
 from django.contrib.auth.forms import PasswordChangeForm
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -84,6 +84,25 @@ class UserRegistrationForm(forms.ModelForm):
                 _('Un compte avec cette adresse email existe déjà.')
             )
         return email
+
+    def clean_password1(self):
+        """
+        Valide le mot de passe avec les validateurs Django.
+
+        Returns:
+            str: Mot de passe validé
+
+        Raises:
+            ValidationError: Si le mot de passe ne respecte pas les règles
+        """
+        password1 = self.cleaned_data.get('password1')
+        if password1:
+            # Valider le mot de passe avec les validateurs Django
+            try:
+                password_validation.validate_password(password1, self.instance if hasattr(self, 'instance') else None)
+            except ValidationError as e:
+                raise ValidationError(e.messages)
+        return password1
 
     def clean_password2(self):
         """

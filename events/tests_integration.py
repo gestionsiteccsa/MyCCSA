@@ -22,8 +22,9 @@ class EventWorkflowDGADGSTest(TestCase):
 
         # Créer les rôles (avec niveau requis) - utiliser get_or_create pour éviter les conflits
         # Utiliser des niveaux uniques (10, 11, 12) pour éviter les conflits avec les migrations
-        self.role_dga, _ = Role.objects.get_or_create(nom='DGA_TEST', defaults={'niveau': 10})
-        self.role_dgs, _ = Role.objects.get_or_create(nom='DGS_TEST', defaults={'niveau': 11})
+        # Utiliser les noms exacts 'DGA' et 'DGS' pour que is_dga() et is_dgs() fonctionnent
+        self.role_dga, _ = Role.objects.get_or_create(nom='DGA', defaults={'niveau': 10})
+        self.role_dgs, _ = Role.objects.get_or_create(nom='DGS', defaults={'niveau': 11})
         self.role_communication, _ = Role.objects.get_or_create(
             nom='Chargé de communication', defaults={'niveau': 12}
         )
