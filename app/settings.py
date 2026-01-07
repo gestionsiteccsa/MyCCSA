@@ -180,6 +180,10 @@ CACHES = {
 }
 
 # Logging configuration
+# Créer le dossier logs s'il n'existe pas (nécessaire pour CI/CD)
+LOG_DIR = BASE_DIR / 'logs'
+LOG_DIR.mkdir(exist_ok=True)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
