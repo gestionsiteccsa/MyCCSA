@@ -142,4 +142,3 @@ class UserRoleForm(forms.Form):
         """
         role = self.cleaned_data.get('role')
         return role
-

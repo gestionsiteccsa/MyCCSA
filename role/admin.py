@@ -44,4 +44,3 @@ class RoleAdmin(admin.ModelAdmin):
 
     get_user_count.short_description = _('Nombre d\'utilisateurs')
     get_user_count.admin_order_field = 'utilisateurs__count'
-

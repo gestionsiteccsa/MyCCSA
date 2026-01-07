@@ -133,4 +133,3 @@ class UserSecteursIntegrationTest(TestCase):
         self.assertEqual(self.user.secteurs.count(), 1)
         self.assertNotIn(self.secteur1, self.user.secteurs.all())
         self.assertIn(self.secteur2, self.user.secteurs.all())
-
