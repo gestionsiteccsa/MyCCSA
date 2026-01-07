@@ -31,10 +31,11 @@ class ListTemplateTest(TestCase):
         response = self.client.get(reverse('secteurs:list'))
         self.assertEqual(response.status_code, 200)
 
-        # Vérifier que le compteur d'utilisateurs n'est pas présent
-        self.assertNotContains(response, 'utilisateur')
-        self.assertNotContains(response, 'utilisateurs')
-        self.assertNotContains(response, 'utilisateurs.count')
+        # Vérifier que le compteur d'utilisateurs n'est pas présent dans le tableau
+        # (mais peut être présent dans la description générale)
+        content = response.content.decode('utf-8')
+        # Vérifier qu'il n'y a pas de pattern comme "X utilisateur(s)" dans le tableau
+        self.assertNotRegex(content, r'\d+\s+utilisateur')
 
         # Vérifier qu'il n'y a pas de référence au count dans le HTML
         content = response.content.decode('utf-8')

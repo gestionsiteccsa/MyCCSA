@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
 from fractionnement.models import CycleHebdomadaire, PeriodeConge, ParametresAnnee, CalculFractionnement
-from .services.calcul_service import (
+from fractionnement.services.calcul_service import (
     calculer_rtt_annuels,
     calculer_conges_annuels,
     calculer_jours_fractionnement,
@@ -16,7 +16,7 @@ from .services.calcul_service import (
     get_jours_hors_periode_principale,
     calculer_fractionnement_complet,
 )
-from .services.calendrier_service import (
+from fractionnement.services.calendrier_service import (
     get_calendrier_data,
     get_jours_feries_list,
     get_vacances_zone_b_list,

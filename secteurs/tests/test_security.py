@@ -209,9 +209,9 @@ class InputValidationTest(TestCase):
 
         # Vérifier que la table existe toujours
         from django.db import connection
+        table_names = connection.introspection.table_names()
         self.assertTrue(
-            Secteur.objects.model._meta.db_table in
-            [t.name for t in connection.introspection.table_names()])
+            Secteur.objects.model._meta.db_table in table_names)
 
         # Si le secteur a été créé, le nom devrait être stocké tel quel (échappé par l'ORM)
         if response.status_code == 302:  # Redirect après succès
